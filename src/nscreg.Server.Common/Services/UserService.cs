@@ -145,7 +145,7 @@ namespace nscreg.Server.Common.Services
             if (isSuspend)
             {
                 var adminRole = _context.Roles.Include(r => r.Users).FirstOrDefault(
-                 r => r.Name == DefaultRoleNames.SystemAdministrator);
+                 r => r.Name == DefaultRoleNames.Administrator);
                 if (adminRole == null)
                     throw new Exception(nameof(Resource.SysAdminRoleMissingError));
 

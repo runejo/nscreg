@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -23,16 +23,16 @@ namespace nscreg.Server.Test.Extensions
         public static string UserId => "8A071342-863E-4EFB-9B60-04050A6D2F4B";
         public static void Initialize(this NSCRegDbContext context)
         {
-            var role = context.Roles.FirstOrDefault(r => r.Name == DefaultRoleNames.SystemAdministrator);
+            var role = context.Roles.FirstOrDefault(r => r.Name == DefaultRoleNames.Administrator);
             var daa = DataAccessAttributesProvider.Attributes.Select(v => v.Name).ToArray();
             if (role == null)
             {
                 role = new Role
                 {
-                    Name = DefaultRoleNames.SystemAdministrator,
+                    Name = DefaultRoleNames.Administrator,
                     Status = RoleStatuses.Active,
                     Description = "System administrator role",
-                    NormalizedName = DefaultRoleNames.SystemAdministrator.ToUpper(),
+                    NormalizedName = DefaultRoleNames.Administrator.ToUpper(),
                     AccessToSystemFunctionsArray =
                         ((SystemFunctions[]) Enum.GetValues(typeof(SystemFunctions))).Cast<int>(),
                 };

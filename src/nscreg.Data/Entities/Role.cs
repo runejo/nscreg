@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Newtonsoft.Json;
 using nscreg.Data.Constants;
+using nscreg.Data.Entities.ComplexTypes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -35,17 +37,17 @@ namespace nscreg.Data.Entities
         }
 
         [NotMapped]
-        public IEnumerable<string> StandardDataAccessArray
+        public DataAccessPermissions StandardDataAccessArray
         {
             get
             {
                 return string.IsNullOrEmpty(StandardDataAccess)
-                    ? new string[0]
-                    : StandardDataAccess.Split(',');
+                    ? new DataAccessPermissions()
+                    : JsonConvert.DeserializeObject<DataAccessPermissions>(StandardDataAccess);
             }
             set
             {
-                StandardDataAccess = string.Join(",", value);
+                StandardDataAccess = JsonConvert.SerializeObject(value);
             }
         }
         [NotMapped]

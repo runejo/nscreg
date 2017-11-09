@@ -191,7 +191,7 @@ namespace nscreg.Server.Common.Services
                 _context.Users.Any(u => userIds.Contains(u.Id) && u.Status == UserStatuses.Active))
                 throw new Exception(nameof(Resource.DeleteRoleError));
 
-            if (status == RoleStatuses.Suspended && role.Name == DefaultRoleNames.SystemAdministrator)
+            if (status == RoleStatuses.Suspended && role.Name == DefaultRoleNames.Administrator)
                 throw new Exception(nameof(Resource.DeleteSysAdminRoleError));
 
             await _commandCtx.ToggleSuspendRole(id, status);
