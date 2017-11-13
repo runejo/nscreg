@@ -95,6 +95,15 @@ class Edit extends React.Component {
           required
         />
         <Form.Input
+          value={user.email}
+          onChange={this.handleEdit}
+          name="email"
+          type="email"
+          label={localize('UserEmail')}
+          placeholder={localize('EmailPlaceholder')}
+          required
+        />
+        <Form.Input
           value={user.newPassword || ''}
           onChange={this.handleEdit}
           name="newPassword"
@@ -112,15 +121,6 @@ class Edit extends React.Component {
           error={user.confirmPassword !== user.newPassword}
         />
         <Form.Input
-          value={user.email}
-          onChange={this.handleEdit}
-          name="email"
-          type="email"
-          label={localize('UserEmail')}
-          placeholder={localize('EmailPlaceholder')}
-          required
-        />
-        <Form.Input
           value={user.phone}
           onChange={this.handleEdit}
           name="phone"
@@ -131,22 +131,21 @@ class Edit extends React.Component {
         {this.state.fetchingRoles
           ? <Loader active />
           : <Form.Select
-            value={user.assignedRoles}
+            value={user.assignedRole}
             onChange={this.handleEdit}
             options={this.state.rolesList.map(r => ({ value: r.name, text: r.name }))}
-            name="assignedRoles"
+            name="assignedRole"
             label={localize('AssignedRoles')}
             placeholder={localize('SelectOrSearchRoles')}
-            multiple
             search
           />}
-        <DataAccess
+        {/* <DataAccess
           value={user.dataAccess}
           name="dataAccess"
           onChange={this.handleEdit}
           label={localize('DataAccess')}
           localize={localize}
-        />
+        /> */}
         {regionTree &&
         <RegionTree
           name="RegionTree"

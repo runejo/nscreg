@@ -24,7 +24,7 @@ namespace nscreg.Server.Common.Models.Roles
             Name = role.Name,
             Description = role.Description,
             AccessToSystemFunctions = role.AccessToSystemFunctionsArray,
-            StandardDataAccess = DataAccessModel.FromString(role.StandardDataAccess),
+            StandardDataAccess = DataAccessModel.FromPermissions(role.StandardDataAccessArray),
             ActiveUsers = role.ActiveUsers,
             Status = role.Status,
             ActiviyCategoryIds = role.ActivitysCategoryRoles

@@ -86,7 +86,7 @@ class RolesList extends React.Component {
       <div>
         {this.state.showConfirm && this.renderConfirm()}
         <h2>{localize('RolesList')}</h2>
-        {sF('RoleCreate')
+        {/* {sF('RoleCreate')
           && <Button
             as={Link}
             to="/roles/create"
@@ -94,7 +94,7 @@ class RolesList extends React.Component {
             icon={<Icon size="large" name="universal access" />}
             size="medium"
             color="green"
-          />}
+          />} */}
         <Paginate totalCount={totalCount}>
           <Table selectable>
             <TableHeader localize={localize} />

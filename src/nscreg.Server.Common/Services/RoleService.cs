@@ -103,7 +103,7 @@ namespace nscreg.Server.Common.Services
                 Name = data.Name,
                 Description = data.Description,
                 AccessToSystemFunctionsArray = data.AccessToSystemFunctions,
-                StandardDataAccessArray = data.StandardDataAccess.ToStringCollection(),
+                //StandardDataAccessArray = data.StandardDataAccess.ToPermissionsModel(),
                 NormalizedName = data.Name.ToUpper(),
                 Status = RoleStatuses.Active,
             };
@@ -135,7 +135,7 @@ namespace nscreg.Server.Common.Services
 
             role.Name = data.Name;
             role.AccessToSystemFunctionsArray = data.AccessToSystemFunctions;
-            role.StandardDataAccessArray = data.StandardDataAccess.ToStringCollection();
+            role.StandardDataAccessArray = data.StandardDataAccess.ToPermissionsModel();
             role.Description = data.Description;
             RelateActivityCategories(role, data);
             _context.SaveChanges();

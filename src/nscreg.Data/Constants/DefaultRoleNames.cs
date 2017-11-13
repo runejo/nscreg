@@ -5,8 +5,8 @@ namespace nscreg.Data.Constants
     /// </summary>
     public static class DefaultRoleNames
     {
-        public static string Administrator => "Administrator";
-        public static string NscEmployee => "NSC Employee";
-        public static string ExternalUser => "External user";
+        public const string Administrator = "Administrator";
+        public const string NscEmployee = "NSC Employee";
+        public const string ExternalUser = "External user";
     }
 }

@@ -5,6 +5,7 @@ import Tree from 'antd/lib/tree'
 import { groupByToArray, mapToArray } from 'helpers/enumerable'
 import { statUnitTypes } from 'helpers/enums'
 import { toCamelCase } from 'helpers/string'
+import styles from './styles.pcss'
 
 const TreeNode = Tree.TreeNode
 
@@ -34,9 +35,11 @@ class DataAccess extends React.Component {
     name: string.isRequired,
     onChange: func.isRequired,
     localize: func.isRequired,
+    readEditable: bool.isRequired,
+    writeEditable: bool.isRequired,
   }
 
-  onCheck = (checkedKeys, { node }) => {
+  onCheck = permission => (checkedKeys, { node }) => {
     const { value, name, onChange } = this.props
     const keys = new Set(checkedKeys)
     const type = node.props.node.type
@@ -47,13 +50,14 @@ class DataAccess extends React.Component {
         [type]: value[type].map(v => ({
           ...v,
           allowed: keys.has(v.name),
+          [permission]: keys.has(v.name),
         })),
       },
     })
   }
 
   render() {
-    const { value, label, localize } = this.props
+    const { value, label, localize, readEditable, writeEditable } = this.props
 
     const dataAccessItems = (type, items) => items
       .map(x => ({
@@ -84,28 +88,45 @@ class DataAccess extends React.Component {
       }
     }
 
-    const loop = nodes => nodes.map(item => (
-      <TreeNode key={`${item.key}`} title={item.name} node={item}>
+    const loop = (nodes, editable) => nodes.map(item => (
+      <TreeNode key={`${item.key}`} title={item.name} node={item} disabled={!editable}>
         {item.children !== null && loop(item.children)}
       </TreeNode>
     ))
 
     const root = unitTypes.map(v => dataAccessByType(value[toCamelCase(v)], v))
 
-    const checkedKeys = [].concat(...unitTypes.map(v =>
-      this.props.value[toCamelCase(v)].filter(x => x.allowed).map(x => x.name)))
+    const checkedReadKeys = [].concat(...unitTypes.map(v =>
+      this.props.value[toCamelCase(v)].filter(x => x.canRead).map(x => x.name)))
+    const checkedWriteKeys = [].concat(...unitTypes.map(v =>
+        this.props.value[toCamelCase(v)].filter(x => x.canWrite).map(x => x.name)))
 
     return (
       <div className="field">
         <label htmlFor={name}>{label}</label>
-        <Tree
-          id={name}
-          checkable
-          checkedKeys={checkedKeys}
-          onCheck={this.onCheck}
-        >
-          {loop(root)}
-        </Tree>
+        <div id={name} className={styles['tree-wrapper']}>
+          <div className={styles['tree-column']}>
+            <span>Read</span>
+            <Tree
+              checkable
+              checkedKeys={checkedReadKeys}
+              onCheck={this.onCheck('canRead')}
+            >
+              {loop(root, readEditable)}
+            </Tree>
+          </div>
+          <div className={styles['tree-column']}>
+            <span>Write</span>
+            <Tree
+              checkable
+              checkedKeys={checkedWriteKeys}
+              onCheck={this.onCheck('canWrite')}
+            >
+              {loop(root, writeEditable)}
+            </Tree>
+          </div>
+
+        </div>
       </div>
     )
   }

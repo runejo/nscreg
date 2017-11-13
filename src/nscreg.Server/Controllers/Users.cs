@@ -1,5 +1,6 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using nscreg.Data;
@@ -36,11 +37,13 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        [SystemFunction(SystemFunctions.UserView)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        //[SystemFunction(SystemFunctions.UserView)]
         public IActionResult GetUserById(string id) => Ok(_userService.GetById(id));
 
         [HttpPost]
-        [SystemFunction(SystemFunctions.UserCreate)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        //[SystemFunction(SystemFunctions.UserCreate)]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateM data)
         {
             if (await _userManager.FindByNameAsync(data.Login) != null)
@@ -65,7 +68,7 @@ namespace nscreg.Server.Controllers
                 createResult.Errors.ForEach(err => ModelState.AddModelError(err.Code, err.Description));
                 return BadRequest(ModelState);
             }
-            var assignRolesResult = await _userManager.AddToRolesAsync(user, data.AssignedRoles);
+            var assignRolesResult = await _userManager.AddToRoleAsync(user, data.AssignedRole);
 
 
             if (!assignRolesResult.Succeeded)
@@ -76,11 +79,13 @@ namespace nscreg.Server.Controllers
 
             await _userService.RelateUserRegionsAsync(user, data);
 
-            return Created($"api/users/{user.Id}", UserVm.Create(user, await _userManager.GetRolesAsync(user)));
+            var role = (await _userManager.GetRolesAsync(user)).Single();
+            return Created($"api/users/{user.Id}", UserVm.Create(user, role));
         }
 
         [HttpPut("{id}")]
-        [SystemFunction(SystemFunctions.UserEdit)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        //[SystemFunction(SystemFunctions.UserEdit)]
         public async Task<IActionResult> Edit(string id, [FromBody] UserEditM data)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -114,12 +119,16 @@ namespace nscreg.Server.Controllers
                     return BadRequest(ModelState);
                 }
             }
-            var oldRoles = await _userManager.GetRolesAsync(user);
-            if (!(await _userManager.AddToRolesAsync(user, data.AssignedRoles.Except(oldRoles))).Succeeded ||
-                !(await _userManager.RemoveFromRolesAsync(user, oldRoles.Except(data.AssignedRoles))).Succeeded)
+
+            var oldRole = (await _userManager.GetRolesAsync(user)).Single();
+            if (oldRole != data.AssignedRole)
             {
-                ModelState.AddModelError(nameof(data.AssignedRoles), nameof(Resource.RoleUpdateError));
-                return BadRequest(ModelState);
+                if (!(await _userManager.AddToRoleAsync(user, data.AssignedRole)).Succeeded ||
+                    !(await _userManager.RemoveFromRoleAsync(user, oldRole)).Succeeded)
+                {
+                    ModelState.AddModelError(nameof(data.AssignedRole), nameof(Resource.RoleUpdateError));
+                    return BadRequest(ModelState);
+                }
             }
 
             user.Name = data.Name;

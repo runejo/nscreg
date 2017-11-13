@@ -7,6 +7,7 @@ import DataAccess from 'components/DataAccess'
 import ActivityTree from 'components/ActivityTree'
 import FunctionalAttributes from 'components/FunctionalAttributes'
 import styles from './styles.pcss'
+import { roles } from 'helpers/enums'
 
 class Edit extends React.Component {
   static propTypes = {
@@ -71,6 +72,7 @@ class Edit extends React.Component {
               label={localize('RoleName')}
               placeholder={localize('RoleNamePlaceholder')}
               required
+              disabled
             />
             <Form.Input
               value={role.description}
@@ -79,14 +81,17 @@ class Edit extends React.Component {
               label={localize('Description')}
               placeholder={localize('RoleDescriptionPlaceholder')}
             />
+            {role.name !== roles.admin &&
             <DataAccess
               value={role.standardDataAccess}
               name="standardDataAccess"
               label={localize('DataAccess')}
               onChange={this.handleEdit}
               localize={localize}
-            />
-            {activityTree &&
+              readEditable={role.name === roles.nsc || role.name === roles.external}
+              writeEditable={role.name === roles.nsc}
+            />}
+            { /* activityTree &&
             <ActivityTree
               name="activiyCategoryIds"
               label="ActivityCategoryLookup"
@@ -94,15 +99,15 @@ class Edit extends React.Component {
               checked={role.activiyCategoryIds}
               callBack={this.setActivities}
               localize={localize}
-            />
+            /> */
             }
-            <FunctionalAttributes
+            {/* <FunctionalAttributes
               label={localize('AccessToSystemFunctions')}
               value={role.accessToSystemFunctions}
               onChange={this.handleAccessToSystemFunctionsChange}
               name="accessToSystemFunctions"
               localize={localize}
-            />
+            /> */}
             <Button
               content={localize('Back')}
               onClick={navigateBack}

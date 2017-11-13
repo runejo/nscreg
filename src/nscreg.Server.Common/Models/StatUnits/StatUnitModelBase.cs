@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using nscreg.Data.Constants;
 using nscreg.Data.Entities;
+using nscreg.Data.Entities.ComplexTypes;
 using nscreg.Utilities.Enums;
 
 namespace nscreg.Server.Common.Models.StatUnits
@@ -89,7 +90,7 @@ namespace nscreg.Server.Common.Models.StatUnits
         public List<ActivityM> Activities { get; set; }
         public List<PersonM> Persons { get; set; }
         public List<PersonStatUnitModel> PersonStatUnits { get; set; }
-        public ICollection<string> DataAccess { get; set; }
+        public DataAccessPermissions DataAccess { get; set; }
         public ChangeReasons ChangeReason { get; set; }
         public string EditComment { get; set; }
         public int? ForeignParticipationCountryId { get; set; }

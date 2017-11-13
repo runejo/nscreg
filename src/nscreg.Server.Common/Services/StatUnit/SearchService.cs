@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -39,7 +39,7 @@ namespace nscreg.Server.Common.Services.StatUnit
         /// <returns></returns>
         public async Task<SearchVm> Search(SearchQueryM query, string userId, bool deletedOnly = false)
         {
-            var propNames = await _userService.GetDataAccessAttributes(userId, null);
+            var permissions = await _userService.GetDataAccessAttributes(userId, null);
             var suPredicateBuilder = new SearchPredicateBuilder<StatisticalUnit>();
             var statUnitPredicate = suPredicateBuilder.GetPredicate(query.TurnoverFrom, query.TurnoverTo,
                 query.EmployeesNumberFrom, query.EmployeesNumberTo, query.Comparison);
@@ -268,7 +268,7 @@ namespace nscreg.Server.Common.Services.StatUnit
             var result = await filtered
                 .Skip(take >= total ? 0 : skip > total ? skip % total : skip)
                 .Take(query.PageSize)
-                .Select(x => SearchItemVm.Create(x, x.UnitType, propNames))
+                .Select(x => SearchItemVm.Create(x, x.UnitType, permissions.GetReadablePropNames()))
                 .ToListAsync();
 
             return SearchVm.Create(result, total);

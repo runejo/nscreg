@@ -143,6 +143,15 @@ class Create extends React.Component {
             required
           />
           <Form.Input
+            name="email"
+            value={data.email}
+            onChange={this.handleEdit}
+            type="email"
+            label={localize('UserEmail')}
+            placeholder="e.g. robertdiggs@site.domain"
+            required
+          />
+          <Form.Input
             name="password"
             value={data.password}
             onChange={this.handleEdit}
@@ -162,15 +171,6 @@ class Create extends React.Component {
             required
           />
           <Form.Input
-            name="email"
-            value={data.email}
-            onChange={this.handleEdit}
-            type="email"
-            label={localize('UserEmail')}
-            placeholder="e.g. robertdiggs@site.domain"
-            required
-          />
-          <Form.Input
             name="phone"
             value={data.phone}
             onChange={this.handleEdit}
@@ -181,13 +181,12 @@ class Create extends React.Component {
           {fetchingRoles
             ? <Loader content="fetching roles" active />
             : <Form.Select
-              name="assignedRoles"
-              value={data.assignedRoles}
+              name="assignedRole"
+              value={data.assignedRole}
               onChange={this.handleEdit}
               options={rolesList.map(r => ({ value: r.name, text: r.name }))}
               label={localize('AssignedRoles')}
               placeholder={localize('SelectOrSearchRoles')}
-              multiple
               search
             />}
           <Form.Select
@@ -197,7 +196,7 @@ class Create extends React.Component {
             options={[...userStatuses].map(([k, v]) => ({ value: k, text: localize(v) }))}
             label={localize('UserStatus')}
           />
-          {fetchingStandardDataAccess
+          {/* {fetchingStandardDataAccess
             ? <Loader content="fetching standard data access" />
             : <DataAccess
               name="dataAccess"
@@ -205,7 +204,7 @@ class Create extends React.Component {
               onChange={this.handleEdit}
               label={localize('DataAccess')}
               localize={localize}
-            />}
+            />} */}
           {regionTree &&
           <RegionTree
             name="RegionTree"

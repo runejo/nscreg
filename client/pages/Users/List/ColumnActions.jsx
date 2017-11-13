@@ -3,6 +3,7 @@ import { func, shape } from 'prop-types'
 import { Button, Confirm } from 'semantic-ui-react'
 
 import { checkSystemFunction as sF } from 'helpers/config'
+import { isAdmin } from 'helpers/config'
 
 class ColumnActions extends React.Component {
   static propTypes = {
@@ -37,7 +38,7 @@ class ColumnActions extends React.Component {
       : 'UndeleteUserMessage'
     return (
       <Button.Group size="mini">
-        {sF('UserDelete') &&
+        {isAdmin() &&
           <Button
             icon={rowData.status === 1 ? 'trash' : 'undo'}
             color={rowData.status === 1 ? 'red' : 'green'}

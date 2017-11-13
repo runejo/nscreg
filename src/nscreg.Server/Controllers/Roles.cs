@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using nscreg.Data;
 using nscreg.Data.Constants;
@@ -29,7 +30,8 @@ namespace nscreg.Server.Controllers
         /// <param name="onlyActive">Флаг активности роли</param>
         /// <returns></returns>
         [HttpGet]
-        [SystemFunction(SystemFunctions.RoleView, SystemFunctions.UserEdit, SystemFunctions.UserCreate, SystemFunctions.UserView)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        //[SystemFunction(SystemFunctions.RoleView, SystemFunctions.UserEdit, SystemFunctions.UserCreate, SystemFunctions.UserView)]
         public IActionResult GetAllRoles(
                 [FromQuery] PaginatedQueryM model,
                 bool onlyActive = true)
@@ -41,7 +43,8 @@ namespace nscreg.Server.Controllers
         /// <param name="id">Id роли</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [SystemFunction(SystemFunctions.RoleView)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        //[SystemFunction(SystemFunctions.RoleView)]
         public IActionResult GetRoleById(string id) => Ok(_roleService.GetRoleById(id));
 
         /// <summary>

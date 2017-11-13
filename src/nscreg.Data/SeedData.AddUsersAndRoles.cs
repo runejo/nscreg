@@ -98,12 +98,15 @@ namespace nscreg.Data
                 context.Users.Add(sysAdminUser);
             }
 
-            var adminUserRoleBinding = new IdentityUserRole<string>
+            if (!context.UserRoles.Any(x=>x.RoleId == adminRole.Id && x.UserId == sysAdminUser.Id))
             {
-                RoleId = adminRole.Id,
-                UserId = sysAdminUser.Id,
-            };
-            context.UserRoles.Add(adminUserRoleBinding);
+                var adminUserRoleBinding = new IdentityUserRole<string>
+                {
+                    RoleId = adminRole.Id,
+                    UserId = sysAdminUser.Id,
+                };
+                context.UserRoles.Add(adminUserRoleBinding);
+            }
 
             context.SaveChanges();
         }

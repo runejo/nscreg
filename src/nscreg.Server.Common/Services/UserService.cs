@@ -10,6 +10,7 @@ using nscreg.Data;
 using nscreg.Data.Constants;
 using nscreg.Data.Core;
 using nscreg.Data.Entities;
+using nscreg.Data.Entities.ComplexTypes;
 using nscreg.Resources.Languages;
 using nscreg.Server.Common.Models.Users;
 using nscreg.Server.Common.Services.Contracts;
@@ -124,10 +125,10 @@ namespace nscreg.Server.Common.Services
             if (user == null)
                 throw new Exception(nameof(Resource.UserNotFoundError));
 
-            var roleNames = _context.Roles
+            var roleName = _context.Roles
                 .Where(r => user.Roles.Any(ur => ur.RoleId == r.Id))
-                .Select(r => r.Name);
-            return UserVm.Create(user, roleNames);
+                .Select(r => r.Name).Single();
+            return UserVm.Create(user, roleName);
         }
 
         /// <summary>
@@ -196,28 +197,27 @@ namespace nscreg.Server.Common.Services
         /// <param name="userId">Id пользователя</param>
         /// <param name="type">Тип пользователя</param>
         /// <returns></returns>
-        public async Task<ISet<string>> GetDataAccessAttributes(string userId, StatUnitTypes? type)
+        public async Task<DataAccessPermissions> GetDataAccessAttributes(string userId, StatUnitTypes? type)
         {
             var dataAccess = await (
                 from userRoles in _context.UserRoles
                 join role in _context.Roles on userRoles.RoleId equals role.Id
                 where userRoles.UserId == userId
-                select role.StandardDataAccess
-            ).Union(
-                from user in _context.Users
-                where user.Id == userId
-                select user.DataAccess
-            ).ToListAsync();
+                select role.StandardDataAccessArray
+            )
+            .ToListAsync();
 
-            var list = dataAccess.Select(v => (v ?? "").Split(',')).SelectMany(v => v);
-            //Add common attributes
-            list = list.Concat(DataAccessAttributesProvider.CommonAttributes.Select(v => v.Name));
+            var commonPermissions = new DataAccessPermissions(
+                DataAccessAttributesProvider.CommonAttributes
+                    .Select(v => new Permission(v.Name, true, false)));
+            var permissions = DataAccessPermissions.Combine(dataAccess.Append(commonPermissions));
+                
             if (type.HasValue)
             {
                 var name = StatisticalUnitsTypeHelper.GetStatUnitMappingType(type.Value).Name;
-                list = list.Where(v => v.StartsWith($"{name}."));
+                permissions = permissions.ForType(name);
             }
-            return list.ToImmutableHashSet();
+            return permissions;
         }
 
         /// <summary>
