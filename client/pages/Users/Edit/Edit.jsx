@@ -1,8 +1,9 @@
 import React from 'react'
-import { func, shape, oneOfType, number, string } from 'prop-types'
+import { func, shape, oneOfType, number, string, arrayOf } from 'prop-types'
 import { Button, Form, Loader, Message, Icon } from 'semantic-ui-react'
 import { equals } from 'ramda'
 
+import ActivityTree from 'components/ActivityTree'
 import DataAccess from 'components/DataAccess'
 import RegionTree from 'components/RegionTree'
 import { internalRequest } from 'helpers/request'
@@ -20,6 +21,8 @@ class Edit extends React.Component {
     localize: func.isRequired,
     navigateBack: func.isRequired,
     regionTree: shape({}),
+    activityTree: arrayOf(shape({})).isRequired,
+    fetchActivityTree: func.isRequired,
   }
   static defaultProps = {
     regionTree: undefined,
@@ -36,6 +39,7 @@ class Edit extends React.Component {
     this.props.fetchRegionTree()
     this.props.fetchUser(this.props.id)
     this.fetchRoles()
+    this.props.fetchActivityTree()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -71,10 +75,14 @@ class Edit extends React.Component {
     this.props.submitUser(this.props.user)
   }
 
+  setActivities = (activities) => {
+    this.props.editForm({ name: 'activiyCategoryIds', value: activities.filter(x => x !== 'all') })
+  }
+
   handleCheck = value => this.props.editForm({ name: 'userRegions', value })
 
   renderForm() {
-    const { user, localize, regionTree, navigateBack } = this.props
+    const { user, localize, regionTree, navigateBack, activityTree } = this.props
     return (
       <Form className={styles.form} onSubmit={this.handleSubmit}>
         <h2>{localize('EditUser')}</h2>
@@ -139,13 +147,15 @@ class Edit extends React.Component {
             placeholder={localize('SelectOrSearchRoles')}
             search
           />}
-        {/* <DataAccess
-          value={user.dataAccess}
-          name="dataAccess"
-          onChange={this.handleEdit}
-          label={localize('DataAccess')}
+        {activityTree &&
+        <ActivityTree
+          name="activiyCategoryIds"
+          label="ActivityCategoryLookup"
+          dataTree={activityTree}
+          checked={user.activiyCategoryIds || []}
+          callBack={this.setActivities}
           localize={localize}
-        /> */}
+        /> }
         {regionTree &&
         <RegionTree
           name="RegionTree"

@@ -3,6 +3,7 @@ import { func } from 'prop-types'
 import { Button, Form, Loader, Message, Icon } from 'semantic-ui-react'
 import R from 'ramda'
 
+import ActivityTree from 'components/ActivityTree'
 import DataAccess from 'components/DataAccess'
 import RegionTree from 'components/RegionTree'
 import { internalRequest } from 'helpers/request'
@@ -35,6 +36,7 @@ class Create extends React.Component {
       },
       userRegions: [],
       description: '',
+      activiyCategoryIds: [],
     },
     regionTree: undefined,
     rolesList: [],
@@ -42,12 +44,14 @@ class Create extends React.Component {
     fetchingStandardDataAccess: true,
     rolesFailMessage: undefined,
     standardDataAccessMessage: undefined,
+    activityTree: undefined,
   }
 
   componentDidMount() {
     this.fetchRegionTree()
     this.fetchRoles()
     this.fetchStandardDataAccess()
+    this.fetchActivityTree()
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -108,6 +112,21 @@ class Create extends React.Component {
     this.setState(s => ({ data: { ...s.data, [name]: value } }))
   }
 
+  setActivities = (activities) => {
+    this.handleEdit(null, { name: 'activiyCategoryIds', value: activities.filter(x => x !== 'all') })
+  }
+
+  fetchActivityTree = () => {
+    internalRequest({
+      url: '/api/roles/fetchActivityTree',
+      onSuccess: (result) => {
+        this.setState({
+          activityTree: result,
+        })
+      },
+    })
+  }
+
   handleSubmit = (e) => {
     e.preventDefault()
     this.props.submitUser(this.state.data)
@@ -120,8 +139,9 @@ class Create extends React.Component {
     const {
       data,
       fetchingRoles, rolesList, rolesFailMessage,
-      fetchingStandardDataAccess, regionTree,
+      fetchingStandardDataAccess, regionTree, activityTree,
     } = this.state
+    console.log(activityTree)
     return (
       <div className={styles.root}>
         <Form onSubmit={this.handleSubmit}>
@@ -205,6 +225,15 @@ class Create extends React.Component {
               label={localize('DataAccess')}
               localize={localize}
             />} */}
+          {activityTree &&
+            <ActivityTree
+              name="activiyCategoryIds"
+              label="ActivityCategoryLookup"
+              dataTree={activityTree}
+              checked={data.activiyCategoryIds || []}
+              callBack={this.setActivities}
+              localize={localize}
+            /> }
           {regionTree &&
           <RegionTree
             name="RegionTree"

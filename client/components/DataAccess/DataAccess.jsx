@@ -47,11 +47,20 @@ class DataAccess extends React.Component {
       name,
       value: {
         ...value,
-        [type]: value[type].map(v => ({
-          ...v,
-          allowed: keys.has(v.name),
-          [permission]: keys.has(v.name),
-        })),
+        [type]: value[type].map((v) => {
+          const allowed = keys.has(v.name)
+          return ({
+            ...v,
+            [permission]: allowed,
+            canWrite: permission === 'canRead' && !allowed
+            ? allowed
+            : permission === 'canWrite' && allowed
+              ? allowed && v.canRead
+              : permission === 'canWrite'
+                ? allowed
+                : v.canWrite,
+          })
+        }),
       },
     })
   }
@@ -90,7 +99,7 @@ class DataAccess extends React.Component {
 
     const loop = (nodes, editable) => nodes.map(item => (
       <TreeNode key={`${item.key}`} title={item.name} node={item} disabled={!editable}>
-        {item.children !== null && loop(item.children)}
+        {item.children !== null && loop(item.children, editable)}
       </TreeNode>
     ))
 

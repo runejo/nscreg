@@ -45,6 +45,15 @@ const fetchRegionTree = () =>
     },
   })
 
+export const fetchActivityTreeSucceded = createAction('fetch activity tree succeeded')
+
+const fetchActivityTree = () => dispatchRequest({
+  url: '/api/roles/fetchActivityTree',
+  onSuccess: (dispatch, resp) => {
+    dispatch(fetchActivityTreeSucceded(resp))
+  },
+})
+
 export const editForm = createAction('edit user form')
 
 export default {
@@ -53,4 +62,5 @@ export default {
   fetchUser,
   fetchRegionTree,
   navigateBack,
+  fetchActivityTree,
 }
