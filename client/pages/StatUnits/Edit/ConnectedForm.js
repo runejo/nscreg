@@ -14,8 +14,7 @@ import {
 import { actionCreators } from './actions'
 
 const mapPropsToValues = props => createValues(props.dataAccess, props.updatedProperties)
-
-const createSchema = props => createStatUnitSchema(props.type)
+const createSchema = props => createStatUnitSchema(props.type, props.dataAccess.permissions)
 
 const createMapStateToProps = () =>
   createSelector(
@@ -31,7 +30,7 @@ const createMapStateToProps = () =>
         return { spinner: true }
       }
       const updatedProperties = updateProperties(
-        createStatUnitSchema(type).cast(createModel(dataAccess, properties)),
+        createStatUnitSchema(type, dataAccess.permissions).cast(createModel(dataAccess, properties)),
         properties,
       )
       return {

@@ -150,7 +150,8 @@ const byType = {
   },
 }
 
-const configureSchema = (type) => {
+const configureSchema = (typeId, permissions) => {
+  const type = statUnitTypes.get(typeId)
   const mandatoryFields = {
     ...config.mandatoryFields.StatUnit,
     ...config.mandatoryFields[type],
@@ -158,10 +159,15 @@ const configureSchema = (type) => {
   const updateRule = (name, rule) => mandatoryFields[name]
     ? rule.required(`${name}IsRequired`)
     : rule
+
   return Object.entries({
     ...base,
     ...byType[type],
-  }).reduce(
+  })
+  .filter(([name]) =>
+      permissions
+      .some(x => x.propertyName === toPascalCase(name) && (x.canRead || x.canWrite)))
+  .reduce(
     (acc, [prop, rule]) => ({
       ...acc,
       [prop]: updateRule(toPascalCase(prop), rule),
@@ -171,8 +177,6 @@ const configureSchema = (type) => {
 }
 
 export default pipe(
-  Number,
-  x => statUnitTypes.get(x),
   configureSchema,
   object,
 )

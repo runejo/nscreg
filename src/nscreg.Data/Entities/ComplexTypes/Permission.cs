@@ -25,5 +25,10 @@ namespace nscreg.Data.Entities.ComplexTypes
             var p = (Permission) obj;
             return PropertyName == p.PropertyName && CanRead == p.CanRead && CanWrite == p.CanWrite;
         }
+
+        public override int GetHashCode()
+        {
+            return PropertyName.GetHashCode();
+        }
     }
 }
