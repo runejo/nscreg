@@ -18,7 +18,6 @@ import { actionCreators } from './actions'
 
 const getSchema = props => props.schema
 const mapPropsToValues = props => createValues(props.dataAccess, props.updatedProperties)
-const createSchema = props => createStatUnitSchema(props.type, props.dataAccess.permissions)
 
 const createMapStateToProps = () =>
   createSelector(
@@ -33,9 +32,9 @@ const createMapStateToProps = () =>
       if (properties === undefined || dataAccess === undefined) {
         return { spinner: true }
       }
-      const schema = createSchema(type)
+      const schema = createSchema(type, dataAccess.permissions)
       const updatedProperties = updateProperties(
-        createStatUnitSchema(type, dataAccess.permissions).cast(createModel(dataAccess, properties)),
+        schema.cast(createModel(dataAccess, properties)),
         properties,
       )
       return {

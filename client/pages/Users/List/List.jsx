@@ -133,7 +133,7 @@ class UsersList extends React.Component {
               size="medium"
               color="green"
             />
-          )}
+          }
         </div>
         <br />
         <div className={styles['list-root']}>

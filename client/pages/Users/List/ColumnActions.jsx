@@ -42,7 +42,7 @@ class ColumnActions extends React.Component {
             color={rowData.status === 1 ? 'red' : 'green'}
             onClick={this.showConfirm}
           />
-        )}
+        }
         <Confirm
           open={this.state.confirmShow}
           onCancel={this.handleCancel}
