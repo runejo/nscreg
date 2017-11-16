@@ -106,7 +106,7 @@ namespace nscreg.Server.Common.Models.StatUnits.Create
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithMessage(Resource.NameIsRequired);
+                .WithMessage(nameof(Resource.NameIsRequired));
             RuleFor(x => x.EmailAddress)
                 .EmailAddress();
             RuleFor(x => x.EnterpriseUnits)

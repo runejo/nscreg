@@ -33,9 +33,7 @@ class ColumnActions extends React.Component {
 
   render() {
     const { rowData, localize } = this.props
-    const msgKey = rowData.status === 1
-      ? 'DeleteUserMessage'
-      : 'UndeleteUserMessage'
+    const msgKey = rowData.status === 1 ? 'DeleteUserMessage' : 'UndeleteUserMessage'
     return (
       <Button.Group size="mini">
         {isAdmin() &&
@@ -44,7 +42,7 @@ class ColumnActions extends React.Component {
             color={rowData.status === 1 ? 'red' : 'green'}
             onClick={this.showConfirm}
           />
-        }
+        )}
         <Confirm
           open={this.state.confirmShow}
           onCancel={this.handleCancel}

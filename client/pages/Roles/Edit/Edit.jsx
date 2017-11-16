@@ -28,9 +28,11 @@ class Edit extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return this.props.localize.lang !== nextProps.localize.lang
-      || !equals(this.props, nextProps)
-      || !equals(this.state, nextState)
+    return (
+      this.props.localize.lang !== nextProps.localize.lang ||
+      !equals(this.props, nextProps) ||
+      !equals(this.state, nextState)
+    )
   }
 
   setRegion = (region) => {
@@ -50,20 +52,22 @@ class Edit extends React.Component {
     this.props.submitRole({ ...this.props.role })
   }
 
-  handleAccessToSystemFunctionsChange = e => this.props.editForm({
-    name: e.name,
-    value: e.checked
-      ? [...this.props.role.accessToSystemFunctions, e.value]
-      : this.props.role.accessToSystemFunctions.filter(x => x !== e.value),
-  })
+  handleAccessToSystemFunctionsChange = e =>
+    this.props.editForm({
+      name: e.name,
+      value: e.checked
+        ? [...this.props.role.accessToSystemFunctions, e.value]
+        : this.props.role.accessToSystemFunctions.filter(x => x !== e.value),
+    })
 
   render() {
     const { role, activityTree, navigateBack, localize } = this.props
     return (
       <div className={styles.roleEdit}>
-        {role === undefined
-          ? <Loader active />
-          : <Form className={styles.form} onSubmit={this.handleSubmit}>
+        {role === undefined ? (
+          <Loader active />
+        ) : (
+          <Form className={styles.form} onSubmit={this.handleSubmit}>
             <h2>{localize('EditRole')}</h2>
             <Form.Input
               value={role.name}
@@ -116,13 +120,9 @@ class Edit extends React.Component {
               color="grey"
               type="button"
             />
-            <Button
-              content={localize('Submit')}
-              className={styles.sybbtn}
-              type="submit"
-              primary
-            />
-          </Form>}
+            <Button content={localize('Submit')} className={styles.sybbtn} type="submit" primary />
+          </Form>
+        )}
       </div>
     )
   }

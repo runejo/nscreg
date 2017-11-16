@@ -1,21 +1,45 @@
 import { number, object, string, array } from 'yup'
 import { pipe } from 'ramda'
 
-import config from 'helpers/config'
+import { getMandatoryFields } from 'helpers/config'
 import { formatDateTime } from 'helpers/dateHelper'
 import { statUnitTypes } from 'helpers/enums'
 import { toPascalCase } from 'helpers/string'
 
 const defaultDate = formatDateTime(new Date())
-const sureString = string().ensure().default(undefined)
+const sureString = string()
+  .ensure()
+  .default(undefined)
 const sureDateString = string().default(defaultDate)
-const nullableDate = string().ensure().default(undefined)
-const positiveNum = number().positive().nullable(true).default(undefined)
-const requiredPositiveNumber = number().positive().default(0)
-const positiveNumArray = array(positiveNum).min(1).ensure().default([])
-const year = number().positive().min(1900).max(new Date().getFullYear()).nullable(true)
-const activitiesArray = array(object()).min(1).default(undefined)
-const personsArray = array(object()).min(1).default(undefined)
+const nullableDate = string()
+  .ensure()
+  .default(undefined)
+const positiveNum = number()
+  .positive()
+  .nullable(true)
+  .default(undefined)
+const requiredPositiveNumber = number()
+  .positive()
+  .default(0)
+const positiveNumArray = array(positiveNum)
+  .min(1)
+  .ensure()
+  .default([])
+const year = number()
+  .positive()
+  .min(1900)
+  .max(new Date().getFullYear())
+  .nullable(true)
+const activitiesArray = array(object())
+  .min(1)
+  .default(undefined)
+const personsArray = array(object())
+  .min(1)
+  .default(undefined)
+const nullablePositiveNumArray = array(positiveNum)
+  .min(0)
+  .ensure()
+  .default([])
 
 const base = {
   name: sureString.min(2, 'min 2 symbols').max(100, 'max 100 symbols'),
@@ -66,7 +90,6 @@ const base = {
 }
 
 const byType = {
-
   // Local Unit
   [statUnitTypes.get(1)]: {
     legalUnitIdDate: nullableDate,
@@ -87,7 +110,7 @@ const byType = {
     foreignCapitalShare: sureString,
     foreignCapitalCurrency: sureString,
     enterpriseUnitRegId: positiveNum,
-    localUnits: positiveNumArray,
+    localUnits: nullablePositiveNumArray,
   },
 
   // Enterprise Unit
@@ -152,13 +175,9 @@ const byType = {
 
 const configureSchema = (typeId, permissions) => {
   const type = statUnitTypes.get(typeId)
-  const mandatoryFields = {
-    ...config.mandatoryFields.StatUnit,
-    ...config.mandatoryFields[type],
-  }
-  const updateRule = (name, rule) => mandatoryFields[name]
-    ? rule.required(`${name}IsRequired`)
-    : rule
+  const mandatoryFields = getMandatoryFields(type)
+  const updateRule = (name, rule) =>
+    mandatoryFields.includes(name) ? rule.required(`${name}IsRequired`) : rule
 
   return Object.entries({
     ...base,

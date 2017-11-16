@@ -23,7 +23,6 @@ const compareByName = (a, b) => {
 }
 
 class DataAccess extends React.Component {
-
   static propTypes = {
     label: string.isRequired,
     value: shape({
@@ -68,14 +67,15 @@ class DataAccess extends React.Component {
   render() {
     const { value, label, localize, readEditable, writeEditable } = this.props
 
-    const dataAccessItems = (type, items) => items
-      .map(x => ({
-        key: x.name,
-        name: localize(x.localizeKey),
-        type,
-        children: null,
-      }))
-      .sort(compareByName)
+    const dataAccessItems = (type, items) =>
+      items
+        .map(x => ({
+          key: x.name,
+          name: localize(x.localizeKey),
+          type,
+          children: null,
+        }))
+        .sort(compareByName)
 
     const dataAccessGroups = (type, items) =>
       groupByToArray(items, v => v.groupName)

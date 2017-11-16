@@ -11,6 +11,7 @@ using nscreg.Data.Entities;
 using nscreg.Server.Common.Models.Lookup;
 using nscreg.Server.Common.Models.StatUnits;
 using nscreg.Business.PredicateBuilders;
+using nscreg.Utilities.Enums;
 using nscreg.Utilities.Enums.Predicate;
 
 namespace nscreg.Server.Common.Services.StatUnit
@@ -47,7 +48,7 @@ namespace nscreg.Server.Common.Services.StatUnit
             var egPredicateBuilder = new SearchPredicateBuilder<EnterpriseGroup>();
             var entGroupPredicate = egPredicateBuilder.GetPredicate(query.TurnoverFrom, query.TurnoverTo,
                 query.EmployeesNumberFrom, query.EmployeesNumberTo, query.Comparison);
-            
+
             var tempUnit = _dbContext.LocalUnits
                 .Where(x => x.ParentId == null && x.IsDeleted == deletedOnly)
                 .Include(x => x.Address)
@@ -234,7 +235,7 @@ namespace nscreg.Server.Common.Services.StatUnit
 
             if (query.LastChangeTo.HasValue)
             {
-                filtered = filtered.Where(x => x.StartPeriod <= query.LastChangeTo);
+                filtered = filtered.Where(x => x.StartPeriod.Date <= query.LastChangeTo);
                 filter.Add($"\"StartPeriod\" <= '{query.LastChangeTo}' ");
             }
 
@@ -244,9 +245,9 @@ namespace nscreg.Server.Common.Services.StatUnit
                 filter.Add($"(\"DataSource\" IS NOT NULL AND lower(\"DataSource\") LIKE'%{query.LastChangeTo}%') ");
             }
 
-            if (!string.IsNullOrEmpty(query.RegionCode))
+            if (query.RegionId.HasValue)
             {
-                var regionId = _dbContext.Regions.FirstOrDefault(x => x.Code == query.RegionCode).Id;
+                var regionId = _dbContext.Regions.FirstOrDefault(x => x.Id == query.RegionId).Id;
                 filtered = filtered.Where(x => x.Address != null && x.Address.RegionId == regionId);
                 filter.Add($"\"Region_id\" = {regionId}");
             }
@@ -254,18 +255,9 @@ namespace nscreg.Server.Common.Services.StatUnit
             var total = GetFilteredTotalCount(filter, query, activities);
             var take = query.PageSize;
             var skip = query.PageSize * (query.Page - 1);
-            
-            if (query.SortFields != null && query.SortFields.Any())
-            {
-                var sortedResult = filtered.OrderBy(query.SortFields.FirstOrDefault());
-                for (var i = 1; i < query.SortFields.Count; i++)
-                {
-                    sortedResult = sortedResult.ThenBy(query.SortFields[i]);
-                }
-                filtered = sortedResult;
-            }
 
             var result = await filtered
+                .OrderBy(query.SortBy, query.SortRule)
                 .Skip(take >= total ? 0 : skip > total ? skip % total : skip)
                 .Take(query.PageSize)
                 .Select(x => SearchItemVm.Create(x, x.UnitType, permissions.GetReadablePropNames()))
@@ -286,7 +278,7 @@ namespace nscreg.Server.Common.Services.StatUnit
             var connection = _dbContext.Database.GetDbConnection();
             if (connection.State != ConnectionState.Open) connection.Open();
 
-            var commandText = "";
+            string commandText;
             var enterprise =
                 "select count(*) from \"EnterpriseGroups\" left join \"Address\" on \"Address_id\" = \"AddressId\" where {where}";
 
