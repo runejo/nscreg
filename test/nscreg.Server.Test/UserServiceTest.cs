@@ -76,7 +76,7 @@ namespace nscreg.Server.Test
 
                 var result = new UserService(ctx).GetById(user.Id);
 
-                Assert.Equal(role.Name, result.AssignedRoles.First());
+                Assert.Equal(role.Name, result.AssignedRole);
             }
         }
 

@@ -7,7 +7,7 @@ import ActivityTree from 'components/ActivityTree'
 import DataAccess from 'components/DataAccess'
 import RegionTree from 'components/RegionTree'
 import { internalRequest } from 'helpers/request'
-import { userStatuses } from 'helpers/enums'
+import { userStatuses, roles } from 'helpers/enums'
 import styles from './styles.pcss'
 
 class Create extends React.Component {
@@ -228,16 +228,16 @@ class Create extends React.Component {
               label={localize('DataAccess')}
               localize={localize}
             />} */}
-          {activityTree &&
+          {activityTree && data.assignedRole === roles.admin &&
             <ActivityTree
               name="activiyCategoryIds"
               label="ActivityCategoryLookup"
               dataTree={activityTree}
-              checked={data.activiyCategoryIds || []}
+              checked={data.activiyCategoryIds}
               callBack={this.setActivities}
               localize={localize}
             /> }
-          {regionTree &&
+          {regionTree && data.assignedRole === roles.admin &&
           <RegionTree
             name="RegionTree"
             label="Regions"

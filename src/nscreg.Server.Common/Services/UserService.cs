@@ -119,6 +119,7 @@ namespace nscreg.Server.Common.Services
         {
             var user = _context.Users
                 .Include(u => u.Roles)
+                .Include(u=>u.ActivitysCategoryUsers)
                 .Include(x => x.UserRegions)
                 .ThenInclude(x => x.Region)
                 .FirstOrDefault(u => u.Id == id);

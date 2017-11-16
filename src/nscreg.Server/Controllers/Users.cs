@@ -28,8 +28,9 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpGet]
-        [SystemFunction(SystemFunctions.UserView, SystemFunctions.RoleView, SystemFunctions.RoleCreate,
-            SystemFunctions.RoleEdit)]
+        //[SystemFunction(SystemFunctions.UserView, SystemFunctions.RoleView, SystemFunctions.RoleCreate,
+        //    SystemFunctions.RoleEdit)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
         public IActionResult GetAllUsers([FromQuery] UserListFilter filter)
         {
             var users = _userService.GetAllPaged(filter);
@@ -152,7 +153,8 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        [SystemFunction(SystemFunctions.UserDelete)]
+        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        //[SystemFunction(SystemFunctions.UserDelete)]
         public async Task<IActionResult> Delete(string id, bool isSuspend)
         {
             await _userService.SetUserStatus(id, isSuspend);

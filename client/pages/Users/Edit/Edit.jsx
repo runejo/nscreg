@@ -8,6 +8,7 @@ import DataAccess from 'components/DataAccess'
 import RegionTree from 'components/RegionTree'
 import { internalRequest } from 'helpers/request'
 import styles from './styles.pcss'
+import { roles } from 'helpers/enums'
 
 class Edit extends React.Component {
   static propTypes = {
@@ -150,16 +151,16 @@ class Edit extends React.Component {
             search
           />
         )}
-        {activityTree &&
+        {activityTree && user.assignedRole !== roles.admin &&
         <ActivityTree
           name="activiyCategoryIds"
           label="ActivityCategoryLookup"
           dataTree={activityTree}
-          checked={user.activiyCategoryIds || []}
+          checked={user.activiyCategoryIds}
           callBack={this.setActivities}
           localize={localize}
         /> }
-        {regionTree && (
+        {regionTree && user.assignedRole === roles.admin && (
           <RegionTree
             name="RegionTree"
             label="Regions"
