@@ -18,9 +18,6 @@ namespace nscreg.Data.Entities
         public string StandardDataAccess { get; set; }
         public RoleStatuses Status { get; set; }
 
-        public virtual ICollection<ActivityCategoryRole> ActivitysCategoryRoles { get; set; } =
-            new HashSet<ActivityCategoryRole>();
-
         [NotMapped]
         public IEnumerable<int> AccessToSystemFunctionsArray
         {

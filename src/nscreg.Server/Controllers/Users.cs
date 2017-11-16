@@ -78,6 +78,7 @@ namespace nscreg.Server.Controllers
             }
 
             await _userService.RelateUserRegionsAsync(user, data);
+            await _userService.RelateUserActivityCategoriesAsync(user, data);
 
             var role = (await _userManager.GetRolesAsync(user)).Single();
             return Created($"api/users/{user.Id}", UserVm.Create(user, role));
@@ -145,6 +146,7 @@ namespace nscreg.Server.Controllers
             }
 
             await _userService.RelateUserRegionsAsync(user, data);
+            await _userService.RelateUserActivityCategoriesAsync(user, data);
 
             return NoContent();
         }

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using nscreg.Data.Core;
@@ -27,7 +27,7 @@ namespace nscreg.Data
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivityStatisticalUnit> ActivityStatisticalUnits { get; set; }
         public DbSet<ActivityCategory> ActivityCategories { get; set; }
-        public DbSet<ActivityCategoryRole> ActivityCategoryRoles { get; set; }
+        public DbSet<ActivityCategoryUser> ActivityCategoryUsers { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<DataSource> DataSources { get; set; }
         public DbSet<DataSourceQueue> DataSourceQueues { get; set; }

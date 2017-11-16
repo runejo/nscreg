@@ -41,5 +41,9 @@ namespace nscreg.Server.Common.Models.Users
 
         [Required]
         public IEnumerable<int> UserRegions { get; set; }
+
+        [Required]
+        public IEnumerable<int> ActiviyCategoryIds { get; set; }
+
     }
 }

@@ -249,5 +249,35 @@ namespace nscreg.Server.Common.Services
             }
             await _context.SaveChangesAsync();
         }
+        /// <summary>
+        /// Creates/updates relationships between user and activity types
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public async Task RelateUserActivityCategoriesAsync(User user, IUserSubmit data)
+        {
+            var oldActivityCategoryUsers =
+                await _context.ActivityCategoryUsers.Where(x => x.UserId == user.Id).ToListAsync();
+
+            var itemsToDelete =
+                oldActivityCategoryUsers
+                    .Where(x => !data.ActiviyCategoryIds.Contains(x.ActivityCategoryId));
+            foreach (var item in itemsToDelete)
+            {
+                _context.Remove(item);
+            }
+            var itemsToAdd =
+                data.ActiviyCategoryIds.Where(id => oldActivityCategoryUsers.All(x => x.ActivityCategoryId != id));
+            foreach (var id in itemsToAdd)
+            {
+                _context.ActivityCategoryUsers.Add(new ActivityCategoryUser
+                {
+                    ActivityCategoryId = id,
+                    UserId = user.Id
+                });
+            }
+            await _context.SaveChangesAsync();
+        }
     }
 }
