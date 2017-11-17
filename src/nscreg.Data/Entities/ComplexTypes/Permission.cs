@@ -17,18 +17,5 @@ namespace nscreg.Data.Entities.ComplexTypes
         public bool CanRead { get; set; }
         public bool CanWrite { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-                return false;
-
-            var p = (Permission) obj;
-            return PropertyName == p.PropertyName && CanRead == p.CanRead && CanWrite == p.CanWrite;
-        }
-
-        public override int GetHashCode()
-        {
-            return PropertyName.GetHashCode();
-        }
     }
 }

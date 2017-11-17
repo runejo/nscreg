@@ -160,7 +160,7 @@ class Edit extends React.Component {
           callBack={this.setActivities}
           localize={localize}
         /> }
-        {regionTree && user.assignedRole === roles.admin && (
+        {regionTree && user.assignedRole !== roles.admin && (
           <RegionTree
             name="RegionTree"
             label="Regions"

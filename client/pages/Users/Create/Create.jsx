@@ -25,7 +25,7 @@ class Create extends React.Component {
       phone: '',
       password: '',
       confirmPassword: '',
-      assignedRoles: [],
+      assignedRole: roles.admin,
       status: 1,
       dataAccess: {
         localUnit: [],
@@ -142,7 +142,6 @@ class Create extends React.Component {
       fetchingRoles, rolesList, rolesFailMessage,
       fetchingStandardDataAccess, regionTree, activityTree,
     } = this.state
-    console.log(activityTree)
     return (
       <div className={styles.root}>
         <Form onSubmit={this.handleSubmit}>
@@ -228,7 +227,7 @@ class Create extends React.Component {
               label={localize('DataAccess')}
               localize={localize}
             />} */}
-          {activityTree && data.assignedRole === roles.admin &&
+          {activityTree && data.assignedRole !== roles.admin &&
             <ActivityTree
               name="activiyCategoryIds"
               label="ActivityCategoryLookup"
@@ -237,7 +236,7 @@ class Create extends React.Component {
               callBack={this.setActivities}
               localize={localize}
             /> }
-          {regionTree && data.assignedRole === roles.admin &&
+          {regionTree && data.assignedRole !== roles.admin &&
           <RegionTree
             name="RegionTree"
             label="Regions"

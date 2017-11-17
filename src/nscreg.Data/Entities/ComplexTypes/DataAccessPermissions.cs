@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using nscreg.Utilities;
 
 namespace nscreg.Data.Entities.ComplexTypes
 {
@@ -48,7 +50,9 @@ namespace nscreg.Data.Entities.ComplexTypes
 
         public bool IsEqualTo(DataAccessPermissions another)
         {
-            return another.Permissions.Except(Permissions).Any();
+            return another.Permissions.Except(Permissions,
+                EqualityComparerCreator.Create<Permission>(
+                    (x,y)=> x.PropertyName == y.PropertyName && x.CanRead == y.CanRead && x.CanWrite == y.CanWrite)).Any();
         }
 
         public bool HasReadPermission(string name)
