@@ -160,15 +160,18 @@ namespace nscreg.Server.Common.Services
         /// <summary>
         /// Метод получения активности дерева ролей
         /// </summary>
+        /// <param name="parentId"></param>
         /// <returns></returns>
-        public Task<List<ActivityCategoryVm>> FetchActivityTreeAsync() => _context.ActivityCategories
-            .Where(x => Regex.IsMatch(x.Code, @"[a-zA-Z]{1,2}")).OrderBy(x => x.Code)
+        public Task<List<ActivityCategoryVm>> FetchActivityTreeAsync(int? parentId) => _context.ActivityCategories
+            .Where(x => x.ParentId == parentId)
+            .OrderBy(x => x.Code)
             .Select(x => new ActivityCategoryVm
             {
                 Id = x.Id.ToString(),
                 Name = x.Name,
                 Code = x.Code,
-                Section = x.Section
+                Section = x.Section,
+                ParentId = x.ParentId
             }).ToListAsync();
     }
 }

@@ -9,5 +9,6 @@ namespace nscreg.Server.Common.Models.ActivityCategories
     {
         public new string Id { get; set; }
         public string Section { get; set; }
+        public int? ParentId { get; set; }
     }
 }

@@ -37,6 +37,7 @@ namespace nscreg.Server.Common.Services.StatUnit
         /// <returns></returns>
         public async Task<SearchVm> Search(SearchQueryM query, string userId, bool deletedOnly = false)
         {
+            
             var permissions = await _userService.GetDataAccessAttributes(userId, null);
             var suPredicateBuilder = new SearchPredicateBuilder<StatisticalUnit>();
             var statUnitPredicate = suPredicateBuilder.GetPredicate(query.TurnoverFrom, query.TurnoverTo,
@@ -46,7 +47,24 @@ namespace nscreg.Server.Common.Services.StatUnit
                 .Where(x => x.ParentId == null && x.IsDeleted == deletedOnly)
                 .Where(x => query.IncludeLiquidated || string.IsNullOrEmpty(x.LiqReason));
             filtered = (IQueryable<StatUnitSearchView>) (statUnitPredicate == null ? filtered : filtered.Where(statUnitPredicate));
-            
+
+            var allowedActivities = await _userService.GetAllowedActivityIds(userId);
+            if (allowedActivities != null)
+            {
+                var statUnitIds2 =  _dbContext.StatisticalUnits
+                    .Where(x => x.ActivitiesUnits.Any(y => allowedActivities.Contains(y.ActivityId))).Select(v => v.RegId);
+                filtered = filtered.Where(v => statUnitIds2.Contains(v.RegId));
+                //       .Select(x => x.RegId).ToListAsync();
+                //filtered = filtered.Where(x => statUnitIds.Contains(x.RegId));
+            }
+
+            var allowedRegions = await _userService.GetAllowedRegionIds(userId);
+
+            if (allowedRegions != null)
+            {
+                filtered = filtered.Where(x => allowedRegions.Contains(x.RegionId));
+            }
+
             if (!string.IsNullOrEmpty(query.Wildcard))
             {
                 var wildcard = query.Wildcard.ToLower();

@@ -93,6 +93,6 @@ namespace nscreg.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("[action]")]
-        public async Task<IActionResult> FetchActivityTree() => Ok(await _roleService.FetchActivityTreeAsync());
+        public async Task<IActionResult> FetchActivityTree(int? parentId) => Ok(await _roleService.FetchActivityTreeAsync(parentId));
     }
 }
