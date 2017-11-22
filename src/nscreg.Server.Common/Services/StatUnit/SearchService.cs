@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using nscreg.Data;
 using nscreg.Data.Entities;
@@ -50,27 +51,18 @@ namespace nscreg.Server.Common.Services.StatUnit
 
             filtered = (IQueryable<StatUnitSearchView>) (statUnitPredicate == null ? filtered : filtered.Where(statUnitPredicate));
 
-            var allowedRegions = await _userService.GetAllowedRegionIds(userId);
-
-            if (allowedRegions != null)
-            {
-                filtered = filtered.Where(x => allowedRegions.Contains(x.RegionId));
-            }
-
             if (!string.IsNullOrEmpty(query.Wildcard))
             {
                 var wildcard = query.Wildcard.ToLower();
 
-                Predicate<string> checkWildcard =
-                    superStr => !string.IsNullOrEmpty(superStr) && superStr.ToLower().Contains(wildcard);
                 filtered = filtered.Where(x =>
                     x.Name.ToLower().Contains(wildcard)
-                    || checkWildcard(x.StatId)
-                    || checkWildcard(x.TaxRegId)
-                    || checkWildcard(x.ExternalId)
-                    || checkWildcard(x.AddressPart1)
-                    || checkWildcard(x.AddressPart2)
-                    || checkWildcard(x.AddressPart3));
+                    || x.StatId.ToLower().Contains(wildcard)
+                    || x.TaxRegId.ToLower().Contains(wildcard)
+                    || x.ExternalId.ToLower().Contains(wildcard)
+                    || x.AddressPart1.ToLower().Contains(wildcard)
+                    || x.AddressPart2.ToLower().Contains(wildcard)
+                    || x.AddressPart3.ToLower().Contains(wildcard));
             }
 
             if (query.Type.HasValue)
@@ -103,33 +95,55 @@ namespace nscreg.Server.Common.Services.StatUnit
             if (query.RegionId.HasValue)
             {
                 var regionId = _dbContext.Regions.FirstOrDefault(x => x.Id == query.RegionId).Id;
-                filtered = filtered.Where(x => x.RegionId != null && x.RegionId == regionId);
+                filtered = filtered.Where(x => x.RegionId == regionId);
             }
 
-            var ids = from u in _dbContext.StatisticalUnits
-                where u.ActivitiesUnits.Any(a =>
-                    a.Activity.ActivityCategory.ActivityCategoryUsers.Any(acu => acu.UserId == userId))
-                select u.RegId;
+            int total = 0;
 
-            var filteredViewItemsForCount = filtered.Where(v => ids.Contains(v.RegId));
-            var filteredEntGroupsForCount = filtered.Where(v => v.UnitType == StatUnitTypes.EnterpriseGroup);
+            if (!await _userService.IsInRoleAsync(userId, DefaultRoleNames.Administrator))
+            {
+               var ids = 
+                    from asu in _dbContext.ActivityStatisticalUnits 
+                    join act in _dbContext.Activities on asu.ActivityId equals act.Id
+                    join au in _dbContext.ActivityCategoryUsers on act.ActivityCategoryId equals au.ActivityCategoryId
+                    where au.UserId == userId
+                    select asu.UnitId;
 
-            filtered = filtered.Where(v => v.UnitType == StatUnitTypes.EnterpriseGroup || ids.Contains(v.RegId));
+                var regionIds = from ur in _dbContext.UserRegions
+                    where ur.UserId == userId
+                    select ur.RegionId;
+
+                var filteredViewItemsForCount =
+                    filtered.Where(v => ids.Contains(v.RegId) && regionIds.Contains(v.RegionId.Value));
+                var filteredEntGroupsForCount = filtered.Where(v => v.UnitType == StatUnitTypes.EnterpriseGroup);
+
+
+
+                filtered = filtered.Where(v =>
+                    v.UnitType == StatUnitTypes.EnterpriseGroup ||
+                    ids.Contains(v.RegId) && regionIds.Contains(v.RegionId.Value));
+                var totalNonEnterpriseGroups = filteredViewItemsForCount.Count();
+                var totalEnterpriseGroups = filteredEntGroupsForCount.Count();
+                total = totalNonEnterpriseGroups + totalEnterpriseGroups;
+            }
+            else
+            {
+                total = filtered.Count();
+            }
            
-            var totalNonEnterpriseGroups = filteredViewItemsForCount.Count();
-            var totalEnterpriseGroups = filteredEntGroupsForCount.Count();
+           
+            
             
             var take = query.PageSize;
             var skip = query.PageSize * (query.Page - 1);
 
             var result = filtered
                 .OrderBy(query.SortBy, query.SortRule)
-                //.Skip(take >= total ? 0 : skip > total ? skip % total : skip)
-                .Skip(skip)
+                .Skip(take >= total ? 0 : skip > total ? skip % total : skip)
                 .Take(query.PageSize)
                 .Select(x => SearchItemVm.Create(x, x.UnitType, permissions.GetReadablePropNames()))
                 .ToList();
-            return SearchVm.Create(result, totalNonEnterpriseGroups + totalEnterpriseGroups);
+            return SearchVm.Create(result, total);
         }
 
         /// <summary>

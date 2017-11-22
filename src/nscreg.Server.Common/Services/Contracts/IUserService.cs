@@ -13,5 +13,6 @@ namespace nscreg.Server.Common.Services.Contracts
         Task<SystemFunctions[]> GetSystemFunctionsByUserId(string userId);
         Task<DataAccessPermissions> GetDataAccessAttributes(string userId, StatUnitTypes? type);
         Task SetUserStatus(string id, bool isSuspend);
+        Task<bool> IsInRoleAsync(string userId, string role);
     }
 }

@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using nscreg.CommandStack;
 using nscreg.Data;
@@ -298,58 +298,16 @@ namespace nscreg.Server.Common.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<int>> GetAllowedActivityIds(string userId)
+        /// <summary>
+        /// Determines if user belongs to specified role
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public async Task<bool> IsInRoleAsync(string userId, string role)
         {
-            var adminRole = await _context.Roles.FirstOrDefaultAsync(x => x.Name == DefaultRoleNames.Administrator);
-            var user = await _context.Users.Include(x=>x.Roles)
-                .Include(x=>x.ActivitysCategoryUsers)
-                .SingleAsync(x=>x.Id == userId);
-
-            if (user.Roles.Any(x => x.RoleId == adminRole.Id))
-            {
-                return null;
-            }
-
-            var allCategories = await _context.ActivityCategories.ToListAsync();
-            var allowedCategoryIds = user.ActivitysCategoryUsers
-                .SelectMany(x=> GetFlatActivityCategoriesList(x.ActivityCategoryId, allCategories))
-                .Select(x=> x.Id)
-                .Union(user.ActivitysCategoryUsers.Select(x => x.ActivityCategoryId))
-                .ToList();
-
-            return await _context.Activities
-                .Where(x => allowedCategoryIds.Contains(x.ActivityCategoryId))
-                .Select(x=>x.Id)
-                .ToListAsync();
-        }
-
-        private IEnumerable<ActivityCategory> GetFlatActivityCategoriesList(int parentId, IEnumerable<ActivityCategory> categories)
-        {
-            foreach (var category in categories.Where(x=>x.ParentId == parentId))
-            {
-                yield return category;
-                foreach (var child in GetFlatActivityCategoriesList(category.Id, categories))
-                {
-                    yield return child;
-                }
-            }
-
-        }
-
-        public async Task<List<int?>> GetAllowedRegionIds(string userId)
-        {
-            var adminRole = await _context.Roles.FirstOrDefaultAsync(x => x.Name == DefaultRoleNames.Administrator);
-            var user = await _context.Users.Include(x => x.Roles)
-                .Include(x => x.UserRegions)
-                .SingleAsync(x => x.Id == userId);
-
-            if (user.Roles.Any(x => x.RoleId == adminRole.Id))
-            {
-                return null;
-            }
-
-            return user.UserRegions.Select(x => x.RegionId).Cast<int?>().ToList();
-
+            var roles = await _context.Roles.Include(x => x.Users).SingleAsync(x => x.Name == role);
+            return roles.Users.Any(x => x.UserId == userId);
         }
     }
 }
