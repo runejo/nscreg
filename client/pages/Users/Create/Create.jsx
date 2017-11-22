@@ -4,7 +4,6 @@ import { Button, Form, Loader, Message, Icon } from 'semantic-ui-react'
 import R from 'ramda'
 
 import ActivityTree from 'components/ActivityTree'
-import DataAccess from 'components/DataAccess'
 import RegionTree from 'components/RegionTree'
 import { internalRequest } from 'helpers/request'
 import { userStatuses, roles } from 'helpers/enums'
@@ -42,14 +41,12 @@ class Create extends React.Component {
     fetchingRoles: true,
     fetchingStandardDataAccess: true,
     rolesFailMessage: undefined,
-    standardDataAccessMessage: undefined,
-    activityTree: undefined,
+    activityTree: [],
   }
 
   componentDidMount() {
     this.fetchRegionTree()
     this.fetchRoles()
-    this.fetchStandardDataAccess()
     this.fetchActivityTree()
   }
 
@@ -88,41 +85,21 @@ class Create extends React.Component {
     })
   }
 
-  fetchStandardDataAccess = () => {
-    internalRequest({
-      url: '/api/accessAttributes/dataAttributes',
-      onSuccess: (result) => {
-        this.setState(s => ({
-          data: {
-            ...s.data,
-            dataAccess: result,
-          },
-          fetchingStandardDataAccess: false,
-        }))
-      },
-      onFail: () => {
-        this.setState({
-          standardDataAccessMessage: 'failed loading standard data access',
-          fetchingStandardDataAccess: false,
-        })
-      },
-    })
-  }
-
   handleEdit = (e, { name, value }) => {
     this.setState(s => ({ data: { ...s.data, [name]: value } }))
   }
 
   setActivities = (activities) => {
     this.handleEdit(null, { name: 'activiyCategoryIds', value: activities.filter(x => x !== 'all') })
+    this.handleEdit(null, { name: 'isAllActivitiesSelected', value: activities.some(x => x === 'all') })
   }
 
-  fetchActivityTree = () => {
+  fetchActivityTree = (parentId = 0) => {
     internalRequest({
-      url: '/api/roles/fetchActivityTree',
+      url: `/api/roles/fetchActivityTree?parentId=${parentId}`,
       onSuccess: (result) => {
         this.setState({
-          activityTree: result,
+          activityTree: [...this.state.activityTree, ...result],
         })
       },
     })
@@ -218,15 +195,6 @@ class Create extends React.Component {
             options={[...userStatuses].map(([k, v]) => ({ value: k, text: localize(v) }))}
             label={localize('UserStatus')}
           />
-          {/* {fetchingStandardDataAccess
-            ? <Loader content="fetching standard data access" />
-            : <DataAccess
-              name="dataAccess"
-              value={data.dataAccess}
-              onChange={this.handleEdit}
-              label={localize('DataAccess')}
-              localize={localize}
-            />} */}
           {activityTree && data.assignedRole !== roles.admin &&
             <ActivityTree
               name="activiyCategoryIds"
@@ -235,6 +203,7 @@ class Create extends React.Component {
               checked={data.activiyCategoryIds}
               callBack={this.setActivities}
               localize={localize}
+              loadNode={this.fetchActivityTree}
             /> }
           {regionTree && data.assignedRole !== roles.admin &&
           <RegionTree
@@ -263,7 +232,7 @@ class Create extends React.Component {
           <Button
             content={localize('Submit')}
             type="submit"
-            disabled={fetchingRoles || fetchingStandardDataAccess}
+            disabled={fetchingRoles}
             floated="right"
             primary
           />

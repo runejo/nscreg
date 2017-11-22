@@ -162,12 +162,12 @@ namespace nscreg.Server.Common.Services
         /// </summary>
         /// <param name="parentId"></param>
         /// <returns></returns>
-        public Task<List<ActivityCategoryVm>> FetchActivityTreeAsync(int? parentId) => _context.ActivityCategories
+        public Task<List<ActivityCategoryVm>> FetchActivityTreeAsync(int parentId) => _context.ActivityCategories
             .Where(x => x.ParentId == parentId)
             .OrderBy(x => x.Code)
             .Select(x => new ActivityCategoryVm
             {
-                Id = x.Id.ToString(),
+                Id = x.Id,
                 Name = x.Name,
                 Code = x.Code,
                 Section = x.Section,

@@ -2,12 +2,12 @@ import React from 'react'
 import { func, string, arrayOf, shape } from 'prop-types'
 import Tree from 'antd/lib/tree'
 
-const TreeNode = Tree.TreeNode
+const { TreeNode } = Tree
 
 const buildSubtree = (parent, tree) => {
   const children = tree.filter(c => c.parentId === parent.id)
   return (
-    <TreeNode title={parent.name} key={`${parent.id}`}>
+    <TreeNode title={parent.name} key={parent.id}>
       {children.length ? children.map(x => buildSubtree(x, tree)) : null}
     </TreeNode>
   )
@@ -15,8 +15,11 @@ const buildSubtree = (parent, tree) => {
 
 const buildTree = (parents, dataTree) => parents.map(x => buildSubtree(x, dataTree))
 
-const onLoadData = (node) => {
-  console.log(node)
+const onLoadData = loadNode => (node) => {
+  const key = node.props.eventKey
+  if (key !== 'all') {
+    loadNode(key)
+  }
   return new Promise((resolve) => { resolve() })
 }
 
@@ -25,7 +28,7 @@ const ActivityTree = ({ dataTree, localize, name, label, checked, callBack, load
   return (
     <div>
       <label htmlFor={name}>{localize(label)}</label>
-      <Tree checkable checkedKeys={checked} onCheck={callBack} loadData={onLoadData}>
+      <Tree checkable checkedKeys={checked} onCheck={callBack} loadData={onLoadData(loadNode)}>
         <TreeNode title={localize('AllActivities')} key="all">
           {tree}
         </TreeNode>

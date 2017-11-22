@@ -79,6 +79,7 @@ class Edit extends React.Component {
 
   setActivities = (activities) => {
     this.props.editForm({ name: 'activiyCategoryIds', value: activities.filter(x => x !== 'all') })
+    this.props.editForm({ name: 'isAllActivitiesSelected', value: activities.some(x => x === 'all') })
   }
 
   handleCheck = value => this.props.editForm({ name: 'userRegions', value })
@@ -159,6 +160,7 @@ class Edit extends React.Component {
           checked={user.activiyCategoryIds}
           callBack={this.setActivities}
           localize={localize}
+          loadNode={this.props.fetchActivityTree}
         /> }
         {regionTree && user.assignedRole !== roles.admin && (
           <RegionTree

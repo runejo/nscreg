@@ -41,5 +41,7 @@ namespace nscreg.Server.Common.Models.Users
         [Required]
         public IEnumerable<int> ActiviyCategoryIds { get; set; }
 
+        public bool IsAllActivitiesSelected { get; set; }
+
     }
 }

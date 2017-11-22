@@ -10,6 +10,7 @@ using nscreg.Data.Entities;
 using nscreg.Server.Common.Models.Lookup;
 using nscreg.Server.Common.Models.StatUnits;
 using nscreg.Business.PredicateBuilders;
+using nscreg.Data.Constants;
 
 namespace nscreg.Server.Common.Services.StatUnit
 {
@@ -46,17 +47,8 @@ namespace nscreg.Server.Common.Services.StatUnit
             var filtered = _dbContext.StatUnitSearchView
                 .Where(x => x.ParentId == null && x.IsDeleted == deletedOnly)
                 .Where(x => query.IncludeLiquidated || string.IsNullOrEmpty(x.LiqReason));
-            filtered = (IQueryable<StatUnitSearchView>) (statUnitPredicate == null ? filtered : filtered.Where(statUnitPredicate));
 
-            var allowedActivities = await _userService.GetAllowedActivityIds(userId);
-            if (allowedActivities != null)
-            {
-                var statUnitIds2 =  _dbContext.StatisticalUnits
-                    .Where(x => x.ActivitiesUnits.Any(y => allowedActivities.Contains(y.ActivityId))).Select(v => v.RegId);
-                filtered = filtered.Where(v => statUnitIds2.Contains(v.RegId));
-                //       .Select(x => x.RegId).ToListAsync();
-                //filtered = filtered.Where(x => statUnitIds.Contains(x.RegId));
-            }
+            filtered = (IQueryable<StatUnitSearchView>) (statUnitPredicate == null ? filtered : filtered.Where(statUnitPredicate));
 
             var allowedRegions = await _userService.GetAllowedRegionIds(userId);
 
@@ -114,17 +106,30 @@ namespace nscreg.Server.Common.Services.StatUnit
                 filtered = filtered.Where(x => x.RegionId != null && x.RegionId == regionId);
             }
 
-            var total = filtered.Count();
+            var ids = from u in _dbContext.StatisticalUnits
+                where u.ActivitiesUnits.Any(a =>
+                    a.Activity.ActivityCategory.ActivityCategoryUsers.Any(acu => acu.UserId == userId))
+                select u.RegId;
+
+            var filteredViewItemsForCount = filtered.Where(v => ids.Contains(v.RegId));
+            var filteredEntGroupsForCount = filtered.Where(v => v.UnitType == StatUnitTypes.EnterpriseGroup);
+
+            filtered = filtered.Where(v => v.UnitType == StatUnitTypes.EnterpriseGroup || ids.Contains(v.RegId));
+           
+            var totalNonEnterpriseGroups = filteredViewItemsForCount.Count();
+            var totalEnterpriseGroups = filteredEntGroupsForCount.Count();
+            
             var take = query.PageSize;
             var skip = query.PageSize * (query.Page - 1);
 
-            var result = await filtered
+            var result = filtered
                 .OrderBy(query.SortBy, query.SortRule)
-                .Skip(take >= total ? 0 : skip > total ? skip % total : skip)
+                //.Skip(take >= total ? 0 : skip > total ? skip % total : skip)
+                .Skip(skip)
                 .Take(query.PageSize)
                 .Select(x => SearchItemVm.Create(x, x.UnitType, permissions.GetReadablePropNames()))
-                .ToListAsync();
-            return SearchVm.Create(result, total);
+                .ToList();
+            return SearchVm.Create(result, totalNonEnterpriseGroups + totalEnterpriseGroups);
         }
 
         /// <summary>

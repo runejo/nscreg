@@ -261,6 +261,23 @@ namespace nscreg.Server.Common.Services
             var oldActivityCategoryUsers =
                 await _context.ActivityCategoryUsers.Where(x => x.UserId == user.Id).ToListAsync();
 
+            if (data.IsAllActivitiesSelected)
+            {
+                var allActivities = await _context.ActivityCategories.ToListAsync();
+                var allActivityIds = allActivities
+                    .Where(x => oldActivityCategoryUsers
+                        .All(y => y.ActivityCategoryId != x.Id))
+                    .Select(x => x.Id);
+                foreach (var id in allActivityIds)
+                    _context.ActivityCategoryUsers.Add(new ActivityCategoryUser
+                    {
+                        ActivityCategoryId = id,
+                        UserId = user.Id
+                    });
+                await _context.SaveChangesAsync();
+                return;
+            }
+
             var itemsToDelete =
                 oldActivityCategoryUsers
                     .Where(x => !data.ActiviyCategoryIds.Contains(x.ActivityCategoryId));

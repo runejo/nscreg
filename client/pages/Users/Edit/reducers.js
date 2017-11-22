@@ -4,6 +4,7 @@ import * as actions from './actions'
 
 const initialState = {
   user: undefined,
+  activityTree: [],
 }
 
 const editUser = createReducer(
@@ -26,7 +27,7 @@ const editUser = createReducer(
     }),
     [actions.fetchActivityTreeSucceded]: (state, data) => ({
       ...state,
-      activityTree: data,
+      activityTree: [...state.activityTree, ...data],
     }),
   },
   initialState,
