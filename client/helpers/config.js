@@ -6,7 +6,6 @@ const config = window.__initialStateFromServer
 const checkDAAByType = (target, type) =>
   config.dataAccessAttributes.findIndex(attr => `${statUnitTypes.get(type)}.${target}`.toLowerCase() === attr.toLowerCase())
 
-
 export const checkDataAccessAttribute = target =>
   checkDAAByType(target, 1) >= 0 &&
   checkDAAByType(target, 2) >= 0 &&
@@ -24,7 +23,7 @@ export const getMandatoryFields = unitType =>
     return result
   }, [])
 
-export const isInRole = (...roles) => config.roles.some(r => roles.some(x => x === r))
+export const isInRole = (...userRoles) => config.roles.some(r => userRoles.some(x => x === r))
 
 export const isAdmin = () => isInRole(roles.admin)
 

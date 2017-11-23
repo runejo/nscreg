@@ -20,11 +20,10 @@ import {
 import FilterList from './FilterList'
 import ColumnActions from './ColumnActions'
 import styles from './styles.pcss'
-import { isAdmin } from 'helpers/config'
 
 const ColumnUserName = EnhanceWithRowData(({ rowData }) => (
   <span>
-    {isAdmin()
+    {sF('UserEdit')
       ? <Link to={`/users/edit/${rowData.id}`}>{rowData.name}</Link>
       : rowData.name}
   </span>
@@ -124,7 +123,7 @@ class UsersList extends React.Component {
       <div>
         <div className={styles['add-user']}>
           <h2>{localize('UsersList')}</h2>
-          {isAdmin()
+          {sF('UserCreate')
             && <Button
               as={Link}
               to="/users/create"

@@ -28,9 +28,7 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpGet]
-        //[SystemFunction(SystemFunctions.UserView, SystemFunctions.RoleView, SystemFunctions.RoleCreate,
-        //    SystemFunctions.RoleEdit)]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
+        [SystemFunction(SystemFunctions.UserView, SystemFunctions.RoleView, SystemFunctions.RoleCreate, SystemFunctions.RoleEdit)]
         public IActionResult GetAllUsers([FromQuery] UserListFilter filter)
         {
             var users = _userService.GetAllPaged(filter);
@@ -38,13 +36,11 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
-        //[SystemFunction(SystemFunctions.UserView)]
+        [SystemFunction(SystemFunctions.UserView)]
         public IActionResult GetUserById(string id) => Ok(_userService.GetById(id));
 
         [HttpPost]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
-        //[SystemFunction(SystemFunctions.UserCreate)]
+        [SystemFunction(SystemFunctions.UserCreate)]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateM data)
         {
             if (await _userManager.FindByNameAsync(data.Login) != null)
@@ -86,8 +82,7 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
-        //[SystemFunction(SystemFunctions.UserEdit)]
+        [SystemFunction(SystemFunctions.UserEdit)]
         public async Task<IActionResult> Edit(string id, [FromBody] UserEditM data)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -153,8 +148,7 @@ namespace nscreg.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
-        //[SystemFunction(SystemFunctions.UserDelete)]
+        [SystemFunction(SystemFunctions.UserDelete)]
         public async Task<IActionResult> Delete(string id, bool isSuspend)
         {
             await _userService.SetUserStatus(id, isSuspend);

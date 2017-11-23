@@ -30,8 +30,7 @@ namespace nscreg.Server.Controllers
         /// <param name="onlyActive">Флаг активности роли</param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
-        //[SystemFunction(SystemFunctions.RoleView, SystemFunctions.UserEdit, SystemFunctions.UserCreate, SystemFunctions.UserView)]
+        [SystemFunction(SystemFunctions.RoleView, SystemFunctions.UserEdit, SystemFunctions.UserCreate, SystemFunctions.UserView)]
         public IActionResult GetAllRoles(
                 [FromQuery] PaginatedQueryM model,
                 bool onlyActive = true) =>
@@ -43,8 +42,7 @@ namespace nscreg.Server.Controllers
         /// <param name="id">Id роли</param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [Authorize(Roles = DefaultRoleNames.Administrator)]
-        //[SystemFunction(SystemFunctions.RoleView)]
+        [SystemFunction(SystemFunctions.RoleView)]
         public IActionResult GetRoleById(string id) => Ok(_roleService.GetRoleById(id));
 
         /// <summary>

@@ -2,7 +2,7 @@ import React from 'react'
 import { func, string, number } from 'prop-types'
 import { Link } from 'react-router'
 import { Button, Table, Label } from 'semantic-ui-react'
-import { isAdmin } from 'helpers/config'
+
 
 import { checkSystemFunction as sF } from 'helpers/config'
 import styles from './styles.pcss'
@@ -11,7 +11,7 @@ const ListItem = ({ id, name, description, activeUsers, status, onToggle }) => (
   <Table.Body>
     <Table.Row className={styles.wrap}>
       <Table.Cell>
-        {isAdmin()
+        {sF('RoleEdit')
           ? <Link to={`/roles/edit/${id}`}>{name}</Link>
           : <span>{name}</span>}
       </Table.Cell>
