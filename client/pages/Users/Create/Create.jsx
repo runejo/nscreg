@@ -90,8 +90,14 @@ class Create extends React.Component {
   }
 
   setActivities = (activities) => {
-    this.handleEdit(null, { name: 'activiyCategoryIds', value: activities.filter(x => x !== 'all') })
-    this.handleEdit(null, { name: 'isAllActivitiesSelected', value: activities.some(x => x === 'all') })
+    this.setState(s =>
+      ({
+        data: {
+          ...s.data,
+          activiyCategoryIds: activities.filter(x => x !== 'all'),
+          isAllActivitiesSelected: activities.some(x => x === 'all'),
+        },
+      }))
   }
 
   fetchActivityTree = (parentId = 0) => {
