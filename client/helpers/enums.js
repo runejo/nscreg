@@ -61,6 +61,6 @@ export const statUnitSearchOptions = [
 
 export const roles = {
   admin: 'Administrator',
-  nsc: 'NSC Employee',
+  employee: 'Employee',
   external: 'External user',
 }

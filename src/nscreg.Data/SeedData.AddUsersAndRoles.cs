@@ -45,15 +45,15 @@ namespace nscreg.Data
                 context.Roles.Add(adminRole);
             }
 
-            var employeeRole = context.Roles.FirstOrDefault(r => r.Name == DefaultRoleNames.NscEmployee);
+            var employeeRole = context.Roles.FirstOrDefault(r => r.Name == DefaultRoleNames.Employee);
             if (employeeRole == null)
             {
                 employeeRole = new Role
                 {
-                    Name = DefaultRoleNames.NscEmployee,
+                    Name = DefaultRoleNames.Employee,
                     Status = RoleStatuses.Active,
                     Description = "NSC employee role",
-                    NormalizedName = DefaultRoleNames.NscEmployee.ToUpper(),
+                    NormalizedName = DefaultRoleNames.Employee.ToUpper(),
                     AccessToSystemFunctionsArray =
                         ((SystemFunctions[])Enum.GetValues(typeof(SystemFunctions))).Select(x => (int)x),
                     StandardDataAccessArray = new DataAccessPermissions(daa.Select(x => new Permission(x, true, true))),

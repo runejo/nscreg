@@ -21,17 +21,6 @@ const ListItem = ({ id, name, description, activeUsers, status, onToggle }) => (
           {activeUsers}
         </Label>
       </Table.Cell>
-      {/* <Table.Cell textAlign="right">
-        <Button.Group size="mini">
-          {sF('RoleDelete') && (
-            <Button
-              onClick={onToggle}
-              icon={status ? 'trash' : 'undo'}
-              color={status ? 'red' : 'green'}
-            />
-          )}
-        </Button.Group>
-      </Table.Cell> */}
     </Table.Row>
   </Table.Body>
 )
