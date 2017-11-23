@@ -128,7 +128,7 @@ namespace nscreg.Server.Common.Services
 
             var roleName = _context.Roles
                 .Where(r => user.Roles.Any(ur => ur.RoleId == r.Id))
-                .Select(r => r.Name).Single();
+                .Select(r => r.Name).SingleOrDefault();
             return UserVm.Create(user, roleName);
         }
 

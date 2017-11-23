@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using nscreg.Data.Constants;
@@ -47,6 +49,7 @@ namespace nscreg.Server.Test
             using (var context = CreateDbContext())
             {
                 var user = new User {Name = "UserName", UserName = "UserLogin", Status = UserStatuses.Active};
+               
                 context.Users.Add(user);
                 context.SaveChanges();
 

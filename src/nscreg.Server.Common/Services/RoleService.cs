@@ -100,7 +100,7 @@ namespace nscreg.Server.Common.Services
                 Name = data.Name,
                 Description = data.Description,
                 AccessToSystemFunctionsArray = data.AccessToSystemFunctions,
-                //StandardDataAccessArray = data.StandardDataAccess.ToPermissionsModel(),
+                StandardDataAccessArray = data.StandardDataAccess.ToPermissionsModel(),
                 NormalizedName = data.Name.ToUpper(),
                 Status = RoleStatuses.Active,
             };
