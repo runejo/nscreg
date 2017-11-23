@@ -183,19 +183,15 @@ const configureSchema = (typeId, permissions) => {
     ...base,
     ...byType[type],
   })
-  .filter(([name]) =>
-      permissions
-      .some(x => x.propertyName === toPascalCase(name) && (x.canRead || x.canWrite)))
-  .reduce(
-    (acc, [prop, rule]) => ({
-      ...acc,
-      [prop]: updateRule(toPascalCase(prop), rule),
-    }),
-    {},
-  )
+    .filter(([name]) =>
+      permissions.some(x => x.propertyName === toPascalCase(name) && (x.canRead || x.canWrite)))
+    .reduce(
+      (acc, [prop, rule]) => ({
+        ...acc,
+        [prop]: updateRule(toPascalCase(prop), rule),
+      }),
+      {},
+    )
 }
 
-export default pipe(
-  configureSchema,
-  object,
-)
+export default pipe(configureSchema, object)
