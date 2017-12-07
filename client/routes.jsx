@@ -49,7 +49,7 @@ export default (
     {sF('DataSourcesView') && DataSourcesRoutes}
     {sF('DataSourcesQueueView') && DataSourcesQueueRoutes}
     {sF('StatUnitView') && LogicalChecksRoutes}
-    {AnalysisRoles}
+    {sF('AnalysisQueueView') && AnalysisRoles}
     <Route path="*" component={NotFound} />
   </Route>
 )
