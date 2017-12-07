@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using nscreg.Data;
 using nscreg.Data.Entities;
-using nscreg.Server.Common.Models.Addresses;
 using nscreg.Server.Common.Models.AnalysisQueue;
 
 namespace nscreg.Server.Common.Services
@@ -22,23 +19,29 @@ namespace nscreg.Server.Common.Services
             _context = context;
         }
 
-        public async Task<AnalysisQueueListModel> GetAsync(int page, int pageSize)
+        public async Task<AnalysisQueueListModel> GetAsync(SearchQueryModel filter)
         {
-            IQueryable<AnalysisQueue> query = _context.AnalysisQueues.Include(x=>x.User);
-            
+            IQueryable<AnalysisQueue> query = _context.AnalysisQueues.Include(x => x.User);
+
+            if (filter.DateFrom.HasValue)
+                query = query.Where(x => x.UserStartPeriod >= filter.DateFrom.Value);
+
+            if (filter.DateTo.HasValue)
+                query = query.Where(x => x.UserEndPeriod <= filter.DateTo.Value);
+
             var total = query.Count();
             var result = await query
-                .Skip(pageSize * (page - 1))
-                .Take(pageSize)
+                .Skip(filter.PageSize * (filter.Page - 1))
+                .Take(filter.PageSize)
                 .ToListAsync();
 
             return new AnalysisQueueListModel
             {
                 TotalCount = total,
-                CurrentPage = page,
+                CurrentPage = filter.Page,
                 Items = Mapper.Map<IList<AnalysisQueueModel>>(result ?? new List<AnalysisQueue>()),
-                PageSize = pageSize,
-                TotalPages = (int)Math.Ceiling((double)(total) / pageSize)
+                PageSize = filter.PageSize,
+                TotalPages = (int) Math.Ceiling((double) total / filter.PageSize)
             };
         }
     }

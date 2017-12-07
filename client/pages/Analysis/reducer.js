@@ -26,8 +26,8 @@ const queueHandlers = {
 
   [actions.fetchQueueFailed]: (state, data) => ({
     ...state,
-    list: {
-      ...state.list,
+    queue: {
+      ...state.queue,
       data: undefined,
       fetching: false,
       error: data,
@@ -36,8 +36,8 @@ const queueHandlers = {
 
   [actions.fetchQueueStarted]: state => ({
     ...state,
-    list: {
-      ...state.list,
+    queue: {
+      ...state.queue,
       fetching: true,
       error: undefined,
     },
@@ -45,8 +45,8 @@ const queueHandlers = {
 
   [actions.updateQueueFilter]: (state, data) => ({
     ...state,
-    list: {
-      ...state.list,
+    queue: {
+      ...state.queue,
       formData: { ...state.formData, ...data },
     },
   }),

@@ -21,11 +21,18 @@ const fetchQueue = queryParams =>
     },
   })
 
+const setQuery = pathname => query => (dispatch) => {
+  pipe(updateQueueFilter, dispatch)(query)
+  pipe(push, dispatch)({ pathname, query })
+}
+
 export const queue = {
   fetchQueueStarted,
   fetchQueueSucceeded,
   fetchQueueFailed,
   fetchQueue,
+  updateQueueFilter,
+  setQuery,
   clear,
 }
 
@@ -34,5 +41,7 @@ export default {
   fetchQueueSucceeded,
   fetchQueueFailed,
   fetchQueue,
+  updateQueueFilter,
+  setQuery,
   clear,
 }

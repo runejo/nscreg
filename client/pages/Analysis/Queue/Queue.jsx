@@ -16,34 +16,43 @@ const headerKeys = [
   'User',
 ]
 
-const Queue = ({ items, localize, totalCount, fetching }) => (
-  <div>
-    <h2>{}</h2>
-    <Segment loading={fetching}>
-      <SearchForm
-        searchQuery={{}}
-        onChange={() => {}}
-        onSubmit={() => {}}
-        localize={localize}
-      />
-      <br />
-      <Paginate totalCount={Number(totalCount)}>
-        <Table selectable size="small" className="wrap-content">
-          <Table.Header>
-            <Table.Row>
-              {headerKeys.map(key => <Table.HeaderCell key={key} content={key} />)}
-              <Table.HeaderCell />
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {items.map(item => <Item key={item.id} data={item} localize={localize} />)}
-          </Table.Body>
-        </Table>
-      </Paginate>
-    </Segment>
-  </div>
-)
-
+const Queue = ({ items, localize, totalCount, fetching, formData, query,
+  actions: { updateQueueFilter, setQuery } }) => {
+  const handleChangeForm = (name, value) => {
+    updateQueueFilter({ [name]: value })
+  }
+  const handleSubmitForm = (e) => {
+    e.preventDefault()
+    setQuery({ ...query, ...formData })
+  }
+  return (
+    <div>
+      <h2>{}</h2>
+      <Segment loading={fetching}>
+        <SearchForm
+          searchQuery={formData}
+          onChange={handleChangeForm}
+          onSubmit={handleSubmitForm}
+          localize={localize}
+        />
+        <br />
+        <Paginate totalCount={Number(totalCount)}>
+          <Table selectable size="small" className="wrap-content">
+            <Table.Header>
+              <Table.Row>
+                {headerKeys.map(key => <Table.HeaderCell key={key} content={localize(key)} />)}
+                <Table.HeaderCell />
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {items.map(item => <Item key={item.id} data={item} localize={localize} />)}
+            </Table.Body>
+          </Table>
+        </Paginate>
+      </Segment>
+    </div>
+  )
+}
 Queue.propTypes = {
   localize: func.isRequired,
   totalCount: number.isRequired,

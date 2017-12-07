@@ -20,6 +20,7 @@ const AnalysisQueueItem = ({ data, localize }) => (
         content={localize('Logs')}
         icon="search"
         primary
+        disabled
       />
     </Table.Cell>
   </Table.Row>

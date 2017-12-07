@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using nscreg.Data;
 using nscreg.Data.Constants;
+using nscreg.Server.Common.Models.AnalysisQueue;
 using nscreg.Server.Common.Models.DataSourcesQueue;
 using nscreg.Server.Common.Services;
 using nscreg.Server.Core.Authorize;
@@ -28,9 +29,9 @@ namespace nscreg.Server.Controllers
         /// <param name="query">Запрос</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] SearchQueryM query)
+        public async Task<IActionResult> Get([FromQuery] SearchQueryModel query)
         {
-            return Ok(await _svc.GetAsync(query.Page, query.PageSize));
+            return Ok(await _svc.GetAsync(query));
         }
     }
 }

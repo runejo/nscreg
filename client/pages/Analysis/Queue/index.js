@@ -13,10 +13,12 @@ const mapStateToProps = (state, props) => ({
   localize: getText(state.locale),
 })
 
+const { setQuery, ...actions } = queue
+
 const mapDispatchToProps = (dispatch, props) => ({
   actions: {
-    ...bindActionCreators(queue, dispatch),
-    // setQuery: bindActionCreators(setQuery(props.location.pathname), dispatch),
+    ...bindActionCreators(actions, dispatch),
+    setQuery: bindActionCreators(setQuery(props.location.pathname), dispatch),
   },
 })
 
