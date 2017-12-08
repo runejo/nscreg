@@ -27,7 +27,6 @@ const Queue = ({ items, localize, totalCount, fetching, formData, query,
   }
   return (
     <div>
-      <h2>{}</h2>
       <Segment loading={fetching}>
         <SearchForm
           searchQuery={formData}
