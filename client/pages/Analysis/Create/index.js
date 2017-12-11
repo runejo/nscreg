@@ -7,12 +7,12 @@ import { getText } from 'helpers/locale'
 import { create } from '../actions'
 import Create from './Create'
 
-const mapStateToProps = (state, props) => ({
+const mapStateToProps = state => ({
   ...state.analysisQueue.create,
   localize: getText(state.locale),
 })
 
-const mapDispatchToProps = (dispatch, props) => ({
+const mapDispatchToProps = dispatch => ({
   actions: {
     ...bindActionCreators(create, dispatch),
   },
