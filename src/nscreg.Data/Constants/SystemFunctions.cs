@@ -68,6 +68,7 @@ namespace nscreg.Data.Constants
 
         //Analysis
         AnalysisQueueView = 46,
-        AnalysisQueueAdd = 47
+        AnalysisQueueAdd = 47,
+        AnalysisQueueLogView
     }
 }
