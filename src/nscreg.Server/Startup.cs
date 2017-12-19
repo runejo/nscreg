@@ -86,13 +86,15 @@ namespace nscreg.Server
                     new {controller = "Home", action = "Index"}));
 
             var dbContext = app.ApplicationServices.GetService<NSCRegDbContext>();
-            if (Configuration.GetSection(nameof(ConnectionSettings)).Get<ConnectionSettings>().ParseProvider() ==
-                ConnectionProvider.InMemory)
+            var provider = Configuration.GetSection(nameof(ConnectionSettings)).Get<ConnectionSettings>()
+                .ParseProvider();
+            if (provider == ConnectionProvider.InMemory)
             {
                 dbContext.Database.OpenConnection();
                 dbContext.Database.EnsureCreated();
             }
             if (CurrentEnvironment.IsStaging()) NscRegDbInitializer.RecreateDb(dbContext);
+            NscRegDbInitializer.CreateStatUnitSearchView(dbContext, provider);
             NscRegDbInitializer.Seed(dbContext);
         }
 
@@ -113,6 +115,8 @@ namespace nscreg.Server
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<StatUnitAnalysisRules>>().Value);
             services.Configure<ServicesSettings>(x => Configuration.GetSection(nameof(ServicesSettings)).Bind(x));
             services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<ServicesSettings>>().Value);
+            services.Configure<ReportingSettings>(x => Configuration.GetSection(nameof(ReportingSettings)).Bind(x));
+            services.AddScoped(cfg => cfg.GetService<IOptionsSnapshot<ReportingSettings>>().Value);
             services
                 .AddAntiforgery(op => op.CookieName = op.HeaderName = "X-XSRF-TOKEN")
                 .AddDbContext<NSCRegDbContext>(DbContextHelper.ConfigureOptions(Configuration))
