@@ -1826,6 +1826,15 @@ namespace nscreg.Resources.Languages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Economic Information.
+        /// </summary>
+        public static string EconomicInformation {
+            get {
+                return ResourceManager.GetString("EconomicInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit account.
         /// </summary>
         public static string EditAccount {

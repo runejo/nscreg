@@ -2235,4 +2235,7 @@
   <data name="ShouldNotBeGreaterThenEight" xml:space="preserve">
     <value>Поле ввода не должно быть больше 8 символов</value>
   </data>
+  <data name="EconomicInformation" xml:space="preserve">
+    <value>Экономическая информация</value>
+  </data>
 </root>

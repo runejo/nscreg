@@ -42,7 +42,7 @@ namespace nscreg.AnalysisService
         /// <param name="cancellationToken"></param>
         public async Task Execute(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("analysis queue attempt...");
+            _logger.LogInformation("attempting queue analysis...");
             var analysisQueue = await _ctx.AnalysisQueues.LastOrDefaultAsync(aq => aq.ServerEndPeriod == null, cancellationToken);
             if (analysisQueue != null)
             {
