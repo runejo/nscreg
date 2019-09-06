@@ -121,6 +121,12 @@ namespace nscreg.Server.Test.Extensions
                 };
                 context.Users.Add(eployeeUser);
             }
+
+            context.UserRoles.Add(new IdentityUserRole<string>
+            {
+                RoleId = roleEmployee.Id,
+                UserId = eployeeUser.Id
+            });
             context.SaveChanges();
         }
     }
