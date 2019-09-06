@@ -30,6 +30,7 @@ namespace nscreg.Server.Test.Extensions
                 .Select(v => new Permission(v.Name, true, true)));
 
         public static string UserId => "8A071342-863E-4EFB-9B60-04050A6D2F4B";
+        public static string EmployeeUserId => "76b36e7d-b79c-410e-8820-f0aff36a0ec0";
 
         public static void Initialize(this NSCRegDbContext context)
         {
@@ -53,16 +54,22 @@ namespace nscreg.Server.Test.Extensions
                 };
                 context.Roles.Add(role);
             }
-
-            context.Roles.Add(new Role()
+            var roleEmployee =  context.Roles.FirstOrDefault(r => r.Name == DefaultRoleNames.Employee);
+            if (roleEmployee == null)
             {
-                Name = DefaultRoleNames.Employee,
-                Status = RoleStatuses.Active,
-                Description = "Employee",
-                NormalizedName = DefaultRoleNames.Employee.ToUpper(),
-                AccessToSystemFunctionsArray = ((SystemFunctions[]) Enum.GetValues(typeof(SystemFunctions))).Cast<int>(),
-                StandardDataAccessArray = null
-            });
+                roleEmployee = new Role()
+                {
+                    Name = DefaultRoleNames.Employee,
+                    Status = RoleStatuses.Active,
+                    Description = "Employee",
+                    NormalizedName = DefaultRoleNames.Employee.ToUpper(),
+                    AccessToSystemFunctionsArray =
+                        ((SystemFunctions[]) Enum.GetValues(typeof(SystemFunctions))).Cast<int>(),
+                    StandardDataAccessArray = null
+                };
+                context.Roles.Add(roleEmployee);
+            }
+            
             var anyAdminHere = context.UserRoles.Any(ur => ur.RoleId == role.Id);
             if (anyAdminHere) return;
             var sysAdminUser = context.Users.FirstOrDefault(u => u.Login == "admin");
@@ -92,6 +99,28 @@ namespace nscreg.Server.Test.Extensions
                 UserId = sysAdminUser.Id
             };
             context.UserRoles.Add(adminUserRoleBinding);
+
+            var eployeeUser = context.Users.FirstOrDefault(ur => ur.Login == "employee");
+            if (eployeeUser == null)
+            {
+                eployeeUser = new User
+                {
+                    Id = EmployeeUserId,
+                    Login = "employee",
+                    PasswordHash =
+                        "AQAAAAEAACcQAAAAEF+cTdTv1Vbr9+QFQGMo6E6S5aGfoFkBnsrGZ4kK6HIhI+A9bYDLh24nKY8UL3XEmQ==",
+                    SecurityStamp = "9479325a-6e63-494a-ae24-b27be29be015",
+                    Name = "Employee user",
+                    PhoneNumber = "555123456",
+                    Email = "employee@email.xyz",
+                    NormalizedEmail = "employee@email.xyz".ToUpper(),
+                    Status = UserStatuses.Active,
+                    Description = "Employee account",
+                    NormalizedUserName = "employee".ToUpper(),
+                    DataAccessArray = daa
+                };
+                context.Users.Add(eployeeUser);
+            }
             context.SaveChanges();
         }
     }
