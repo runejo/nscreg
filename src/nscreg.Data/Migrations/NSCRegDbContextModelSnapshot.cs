@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -583,6 +583,8 @@ namespace nscreg.Data.Migrations
 
                     b.Property<DateTime?>("StatIdDate");
 
+                    b.Property<int?>("StatisticalUnitRegId");
+
                     b.Property<string>("Status");
 
                     b.Property<DateTime>("StatusDate");
@@ -629,6 +631,8 @@ namespace nscreg.Data.Migrations
                     b.HasIndex("SizeId");
 
                     b.HasIndex("StartPeriod");
+
+                    b.HasIndex("StatisticalUnitRegId");
 
                     b.HasIndex("UnitStatusId");
 
@@ -1987,6 +1991,10 @@ namespace nscreg.Data.Migrations
                     b.HasOne("nscreg.Data.Entities.UnitSize", "Size")
                         .WithMany()
                         .HasForeignKey("SizeId");
+
+                    b.HasOne("nscreg.Data.Entities.StatisticalUnit")
+                        .WithMany("PersonEnterpriseGroups")
+                        .HasForeignKey("StatisticalUnitRegId");
 
                     b.HasOne("nscreg.Data.Entities.UnitStatus", "UnitStatus")
                         .WithMany()
